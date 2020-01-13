@@ -182,7 +182,7 @@ group-digits = false,
 
 \renewcommand{\maketitle}[0]{%
   \begin{minipage}[c]{0.15\textwidth}
-  \includegraphics[width=2.0cm]{elsys-teknisk.pdf}  
+  \includegraphics[width=2.0cm]{elsys-teknisk}  
   \end{minipage}
   \begin{minipage}[c]{0.85\textwidth}
 
