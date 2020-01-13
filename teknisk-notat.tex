@@ -1,0 +1,83 @@
+%Dokumentinnstillinger:---------------------------------
+\documentclass[11pt,norsk]{elsys-teknisk}
+
+\heading{Teknisk Notat} 
+\title{Fugletitter}
+\author{Forfatter Forfattersen}
+\version{1.0}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+%Automatisk generert innholdsfortegnelse:------------------
+\toc
+
+%Selve rapporten:------------------------------------------
+\textit{Tekst i kursiv er ment som forklaring, tekst uten kursiv skal være med som den er. Kursivert tekst fjernes i den endelige rapporten.\\
+\\
+Denne malen er ment å gi tips for hvordan skrive en god teknisk rapport som dokumenterer et designet og testet elektronisk system. Den tiltenkte leser er en teknisk kyndig person som har bruk for dokumentasjonen i forbindelse med videreutvikling, vedlikehold, reparasjon eller redesign av systemet.\\
+\\
+Malen er inndelt i de samme kaptiler som bør være med i en teknisk rapport, og innholdet i kapitlene er beskrevet fortløpende.
+}
+
+\section{Problemstilling}
+\label{sec:problemstilling}
+\textit{En relativt kort beskrivelse av den overordnede problemstillingen.}
+\begin{itemize}
+\item \textit{Hva er behovet}
+\item \textit{Hvorfor er det viktig}
+\item \textit{Hvem (hvilke grupper) vil kunne være interessert i er system som oppfyller ett eller flere behov innen den overordnede problemstillingen}
+\end{itemize}
+
+\section{Konsept}
+\label{sec:konsept}
+\textit{En overordnet beskrivelse av \textbf{hva} systemet skal gjøre. Her legges vekt på hvordan systemet skal oppføre seg, ikke \textbf{hvordan} det er designet.}
+
+\section{Design}
+\label{sec:design}
+\textit{Her kommer detaljene om \textbf{hvordan} en har tenkt at konseptet skal kunne fungere. Det er fremdeles snakk om prinsipper og ideer, ikke fysisk realisering og komponentvalg.}
+
+\section{Implementering}
+\label{sec:implementering}
+\textit{Enda mer \textbf{hvordan} kommer her. Nå er vi på detaljnivå med detaljerte kretsskjema og dokumentasjon av algoritmer og kode. Større mengder kildekode er ikke aktuelt å ta med, men kortere snutter for å beskrive spesielle løsninger kan tas med. Resten av kildekoden legges ved som vedlegg. \\
+\\
+Detaljer puttes i vedlegg.}
+
+\section{Verifikasjon og test}
+\label{sec:verifikasjon}
+\textit{Her dokumenteres hvordan systemet er testet. Resultat av test og drøfting av potensielle forbedringer. Det er viktig å få med at systemet eller deler av systemet virker eller ikke virker. Dersom det er mulig å tallfeste \textbf{hvor godt} systemet virker, er det bra.}
+
+\section{Konklusjon og anbefalinger}
+\label{sec:konklusjon}
+\textit{Kort oppsummering av den innsikt som er oppnådd som er aktuelt for videreføring i Fase II. Enkelt-resultater som kan tallfestes bør være med.\\
+\\
+NB: Vær konkret på dette punktet. Det er uinteressant \textbf{at} gruppen har oppnådd innsikt på det ene eller andre området. Det interessante er \textbf{hvilken} innsikt som er oppnådd. \\
+\\
+Anbefalinger for videreføring, bruk og vedlikehold er også viktig å få med.}
+
+
+
+%Bibliografi: Legg til flere elementer ved å legge til flere \bibitem:--------
+\phantomsection
+\addcontentsline{toc}{section}{Referanser}
+\begin{thebibliography}{99}
+
+\bibitem{bibelen}
+  Albert Einstein,
+  \emph{Elektronikkbibelen},
+  O Store Forlag,
+  1. utgave,
+  1930.
+
+\end{thebibliography}
+
+\appendix
+
+%Tillegg. Flere tillegg legges til ved å lage flere sections:-----------------
+\section{Vedlegg 1}
+\label{sec:vedlegg1}
+\textit{Ikke-nummerert rapportdel der det kan legges stoff som kan være av aktuelt for spesielt interesserte lesere og som ville redusert lesbarheten om det hadde vært inkludert i hovedteksten. Eksempler kan være større tabeller eller fullstendig kildekode.}
+
+\end{document}
