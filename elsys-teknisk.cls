@@ -96,7 +96,7 @@ group-digits = false,
 \usetikzlibrary{arrows}
 
 % Electronic drawing
-\RequirePackage[european, american currents, american voltages,siunitx, RPvoltages]{circuitikz}
+\RequirePackage[european, american currents, american voltages,siunitx]{circuitikz}
 \tikzset{opampdownlbl/.style={
     below,
     draw=none,
