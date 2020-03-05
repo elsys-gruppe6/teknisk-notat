@@ -1,5 +1,11 @@
 %Dokumentinnstillinger:---------------------------------
 \documentclass[11pt,norsk]{elsys-teknisk}
+\usepackage{amsmath}
+\usepackage{float}
+
+%lagt til
+\usepackage[colorinlistoftodos]{todonotes}
+
 
 \heading{Teknisk Notat} 
 \title{Fugletitter}
@@ -22,15 +28,29 @@ Denne malen er ment å gi tips for hvordan skrive en god teknisk rapport som dok
 Malen er inndelt i de samme kaptiler som bør være med i en teknisk rapport, og innholdet i kapitlene er beskrevet fortløpende.
 }
 
+\jolyu
+
+\newpage
+
 \input{problemstilling/problemstilling.tex}
+
+\newpage
 
 \input{konsept/konsept.tex}
 
+\newpage
+
 \input{design/design.tex}
+
+\newpage
 
 \input{implementering/implementering.tex}
 
+\newpage
+
 \input{verifikasjon-test/verifikasjon-test.tex}
+
+\newpage
 
 
 

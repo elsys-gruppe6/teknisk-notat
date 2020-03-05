@@ -219,3 +219,9 @@ group-digits = false,
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
 % -----------------------------------------------------------------------------
+% ------------ User commands
+\DeclareRobustCommand{\jolyu}{%
+  \begingroup\normalfont
+  \includegraphics[height=1.2\fontcharht\font`\B]{figurer/jolyu.pdf}%
+  \endgroup
+}
