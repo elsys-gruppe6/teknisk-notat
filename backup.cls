@@ -16,7 +16,6 @@
 % Better fonts with accents
 \RequirePackage{lmodern}
 \RequirePackage[T1]{fontenc}
-\RequirePackage{moresize}
 \RequirePackage{babel}
 \RequirePackage[fixlanguage]{babelbib}
 \setlength{\parindent}{0pt} 
@@ -25,7 +24,6 @@
 % Pagesetup
 \RequirePackage[utf8]{inputenc}
 \RequirePackage{a4wide}
-\RequirePackage{xcolor}
 
 % Internasjonal behandling av anførselstegn
 \RequirePackage{csquotes}
@@ -169,54 +167,55 @@ group-digits = false,
 
 % ------- Table of Contents -------
 
-%newcommand{\toc}{
-%  \setlength{\parskip}{0ex}
-%  \renewcommand{\baselinestretch}{0.1}\normalsize
-%  \tableofcontents
-%  \renewcommand{\baselinestretch}{1.00}\normalsize
-%  \setlength{\parskip}{2ex}
-%  \rule{\textwidth}{1pt}
-%}
 \newcommand{\toc}{
-    \tableofcontents
-    \clearpage
-}
-    
+  \setlength{\parskip}{0ex}
+  \renewcommand{\baselinestretch}{0.1}\normalsize
+  \tableofcontents
+  \renewcommand{\baselinestretch}{1.00}\normalsize
+  \setlength{\parskip}{2ex}
+  \rule{\textwidth}{1pt}
+} 
 
 % ----- Title & Header --------------------------------------------------------
 \pagestyle{empty}
 \pagestyle{plain}
 
-\definecolor{elsys}{HTML}{1999ce}
-%\definecolor{lightgray}{}{}
-
 \renewcommand{\maketitle}[0]{%
     \begin{tikzpicture}[remember picture,overlay]
         %\fill[red] (current page.south west)++(2cm,0) --++(3cm,0) --++(\paperheight,0) -| ;
-        \fill [lightgray] ([xshift=2cm]current page.south west) rectangle ++(3cm,\paperheight);
+        \fill [gray] ([xshift=2cm]current page.south west) rectangle ++(3cm,\paperheight);
     \end{tikzpicture}%
-    
-    \begin{minipage}[t]{0.15\textwidth}
-    \includegraphics[width=2.0cm]{figurer/jolyu.pdf}
-    \vspace{13cm}\\
-    \includegraphics[width=2.0cm]{elsys-teknisk}
-    %\includegraphics[width=2.0cm]{elsys-teknisk}  
-    
-    \end{minipage}
-    \hspace*{.7cm}
-    \begin{minipage}[t]{0.75\textwidth}
-    
-    \vspace*{1.5cm}\\
-    {\HUGE \textbf{\@heading}}
-    \vspace*{1.5cm}\\
-    {\huge \@author}
-    \vspace*{1.5cm}\\
-    {\huge \@title \\ \\ \@date}
-    \vspace*{0.5cm}\\
-    {\large Versjon: \@version}
-    \end{minipage}
-    \normalsize
-    \clearpage
+  \begin{minipage}[c]{0.15\textwidth}
+  \includegraphics[width=2.0cm]{elsys-teknisk}  
+  \end{minipage}
+  \begin{minipage}[c]{0.85\textwidth}
+
+  \renewcommand{\arraystretch}{1.7}
+  \large 
+  \begin{tabularx}{\textwidth}{|X|X|}
+  \hline
+  \multicolumn{2}{|l|}{} \\
+  \multicolumn{2}{|l|}{\huge \textbf{\@heading}} \\
+  \multicolumn{2}{|l|}{}  \\
+  \hline
+  \multicolumn{2}{|l|}{Tittel: 
+  %Skriv inn tittel her:------------------------------------------
+  \@title
+  } \\
+  \hline
+  \multicolumn{2}{|l|}{Forfattere: 
+  %Skriv inn forfattere her:--------------------------------------
+  \@author
+  } \\
+  \hline
+  %Skriv inn versjon og dato her her:-----------------------------
+  Versjon: \@version & Dato: \@date
+  \\
+  \hline 
+  \end{tabularx}
+  \end{minipage}
+  \normalsize
+  \clearpage
 }
 
 % ----- For usage with pandoc converted documents -----------------------------
@@ -231,5 +230,3 @@ group-digits = false,
   \includegraphics[height=1.2\fontcharht\font`\B]{figurer/jolyu.pdf}%
   \endgroup
 }
-
-% -----------FONTS-----------
