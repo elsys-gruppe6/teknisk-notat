@@ -14,6 +14,8 @@
 \date{\today}
 \faculty{Fakultet for informasjonsteknologi og elektroteknikk}
 
+\addbibresource{ref.bib}
+
 \begin{document}
 
 \maketitle
@@ -29,9 +31,8 @@
 Denne malen er ment å gi tips for hvordan skrive en god teknisk rapport som dokumenterer et designet og testet elektronisk system. Den tiltenkte leser er en teknisk kyndig person som har bruk for dokumentasjonen i forbindelse med videreutvikling, vedlikehold, reparasjon eller redesign av systemet.\\
 \\
 Malen er inndelt i de samme kaptiler som bør være med i en teknisk rapport, og innholdet i kapitlene er beskrevet fortløpende.
+\cite{bibelen}
 }
-
-\jolyu
 
 \newpage
 
@@ -57,21 +58,23 @@ Malen er inndelt i de samme kaptiler som bør være med i en teknisk rapport, og
 
 
 
-% SKal endre til bibtex %
+% Skal endre til bibtex %
 
 %Bibliografi: Legg til flere elementer ved å legge til flere \bibitem:--------
 \phantomsection
 \addcontentsline{toc}{section}{Referanser}
-\begin{thebibliography}{99}
 
-\bibitem{bibelen}
-  Albert Einstein,
-  \emph{Elektronikkbibelen},
-  O Store Forlag,
-  1. utgave,
-  1930.
-
-\end{thebibliography}
+\printbibliography
+%\begin{thebibliography}{99}
+%
+%\bibitem{bibelen}
+%  Albert Einstein,
+%  \emph{Elektronikkbibelen},
+%  O Store Forlag,
+%  1. utgave,
+%  1930.
+%
+%\end{thebibliography}
 
 
 % Vedlegg

@@ -18,7 +18,7 @@
 \RequirePackage[T1]{fontenc}
 \RequirePackage{moresize}
 \RequirePackage{babel}
-\RequirePackage[fixlanguage]{babelbib}
+%\RequirePackage[fixlanguage]{babelbib}
 \setlength{\parindent}{0pt} 
 \setlength{\parskip}{2ex}
 
@@ -126,6 +126,7 @@ group-digits = false,
 \ifthenelse{\equal{\@oplargemargins}{1}}{}{\RequirePackage{fullpage}}
 
 % Links
+\RequirePackage{xurl}
 \RequirePackage[colorlinks=true,allcolors=blue, hidelinks, pdftex, pdfborderstyle={/S/U/W 0}]{hyperref}
 % Noen av navnene for autoreferanser mangler på norsk, så vi ordner opp i det.
 \addto\extrasnorsk{%
@@ -137,11 +138,11 @@ group-digits = false,
 }
 
 
-% \usepackage[backend=biber,style=numeric,sortcites,firstinits=true]{biblatex} - Bestemmer hvordan referansene og refereanselista i tex-dokument skal se ut.
+\RequirePackage[backend=biber,style=numeric,sortcites,giveninits=true]{biblatex}
 %\usepackage[backend=biber,style=numeric,sortcites,firstinits=true]{biblatex}
 % Velger hvilken stil url-adresser skrives, f.eks sf
 %\urlstyle{sf}
-\urlstyle{same}
+%\urlstyle{same}
 
 %\renewcommand{\familydefault}{\sfdefault}
 %\rmdefault
@@ -161,9 +162,6 @@ group-digits = false,
 
 
 % ----- Reference commands --------------------------------------------------------
-
-\newcommand{\figref}[1]{Figur \ref{#1}}
-%\newcommand{\eqref}[1]{(\ref{#1})}
 
 
 % ----- Page Setup ------------------------------------------------------------
