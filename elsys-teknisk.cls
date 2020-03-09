@@ -143,12 +143,20 @@ group-digits = false,
 %\urlstyle{sf}
 \urlstyle{same}
 
+%\renewcommand{\familydefault}{\sfdefault}
+%\rmdefault
+%\sfdefault
+%\ttdefault
+
 % ----- Titlevariables --------------------------------------------------------
 \newcommand\heading[1]{\renewcommand\@heading{#1}}
 \newcommand\@heading{}
 
 \newcommand\version[1]{\renewcommand\@version{#1}}
 \newcommand\@version{}
+
+\newcommand\faculty[1]{\renewcommand\@faculty{#1}}
+\newcommand\@faculty{}
 
 
 
@@ -211,9 +219,13 @@ group-digits = false,
     \vspace*{1.5cm}\\
     {\huge \@author}
     \vspace*{1.5cm}\\
-    {\huge \@title \\ \\ \@date}
+    {\huge \@title}
+    \vspace*{0.3cm}\\
+    {\huge \@date}
     \vspace*{0.5cm}\\
     {\large Versjon: \@version}
+    \vspace*{8cm}\\
+    {\large \textbf{\@faculty}}
     \end{minipage}
     \normalsize
     \clearpage

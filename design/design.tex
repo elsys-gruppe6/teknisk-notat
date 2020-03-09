@@ -4,6 +4,12 @@
 
 Systemet har en sentral prosesseringsenhet som styrer alle undersystemene som kamera, værstasjon og eksterntilkobling. 
 
+Systemet skal ha en sentral prosesseringsenhet som styrer to undersystemer; kamera og værstasjonen. I tillegg skal denne ha eksterntilkobling til databasen og nettsiden, sammen med lokal lagring for backup. 
+
+Deteksjon
+Prosesseringsenheten vil mota en kontinuerlig strøm av video fra kameraet. Her vil vert bilde bli behandlet internt for fugler. I tillegg skal bildene ses på kontinuerlig. Dvs om vi detekterer en fugl på bilde n og på bilde n+1 så er det en stor sannsynlighet for at dette er samme fugl. Da skal systemet forholde seg til dette og finne banen fuglen tar. 
+
+
 
 \subsection{Blob-detection}
 
