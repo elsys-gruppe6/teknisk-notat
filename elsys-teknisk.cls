@@ -199,36 +199,36 @@ group-digits = false,
 %\definecolor{lightgray}{}{}
 
 \renewcommand{\maketitle}[0]{%
-    \begin{tikzpicture}[remember picture,overlay]
-        %\fill[red] (current page.south west)++(2cm,0) --++(3cm,0) --++(\paperheight,0) -| ;
-        \fill [lightgray] ([xshift=2cm]current page.south west) rectangle ++(3cm,\paperheight);
-    \end{tikzpicture}%
-    
-    \begin{minipage}[t]{0.15\textwidth}
-    \includegraphics[width=2.0cm]{figurer/jolyu.pdf}
-    \vspace{13cm}\\
-    \includegraphics[width=2.0cm]{elsys-teknisk}
-    %\includegraphics[width=2.0cm]{elsys-teknisk}  
-    
-    \end{minipage}
-    \hspace*{.7cm}
-    \begin{minipage}[t]{0.75\textwidth}
-    
-    \vspace*{1.5cm}\\
-    {\HUGE \textbf{\@heading}}
-    \vspace*{1.5cm}\\
-    {\huge \@author}
-    \vspace*{1.5cm}\\
-    {\huge \@title}
-    \vspace*{0.3cm}\\
-    {\huge \@date}
-    \vspace*{0.5cm}\\
-    {\large Versjon: \@version}
-    \vspace*{8cm}\\
-    {\large \textbf{\@faculty}}
-    \end{minipage}
-    \normalsize
-    \clearpage
+  \begin{tikzpicture}[remember picture,overlay]
+    %\fill[red] (current page.south west)++(2cm,0) --++(3cm,0) --++(\paperheight,0) -| ;
+    \fill [lightgray] ([xshift=2cm]current page.south west) rectangle ++(3cm,\paperheight);
+  \end{tikzpicture}%
+
+  \begin{minipage}[t]{0.15\textwidth}
+  \includegraphics[width=2.0cm]{figurer/jolyu.pdf}
+  \vspace{13cm}\\
+  \includegraphics[width=2.0cm]{elsys-teknisk}
+  %\includegraphics[width=2.0cm]{elsys-teknisk}  
+
+  \end{minipage}
+  \hspace*{.7cm}
+  \begin{minipage}[t]{0.75\textwidth}
+
+  \vspace{1.5cm}
+  \HUGE\textbf{\@heading}
+  \vspace{1cm}\\
+  \huge \@author
+  \vspace*{1.5cm}\\
+  \huge \@title
+  \vspace*{0.3cm}\\
+  \huge \@date
+  \vspace*{0.5cm}\\
+  \large Versjon: \@version
+  \vspace*{8cm}\\
+  \large \textbf{\@faculty}
+  \end{minipage}
+  \normalsize
+  \clearpage
 }
 
 % ----- For usage with pandoc converted documents -----------------------------
