@@ -23,14 +23,18 @@
 \setlength{\parskip}{2ex}
 
 % Pagesetup
-\RequirePackage[utf8]{inputenc}
+%\RequirePackage[utf8]{inputenc}
 \RequirePackage{a4wide}
 \RequirePackage{xcolor}
 
+% Code listings
+\RequirePackage[newfloat]{minted}
+
+\newenvironment{code}{\captionsetup{type=listing}}{}
+\SetupFloatingEnvironment{listing}{name=Kodeeksempel}
+
 % Internasjonal behandling av anførselstegn
 \RequirePackage{csquotes}
-
-
 
 % Mikrotypografiske optimeringer
 \RequirePackage[babel=true]{microtype}
@@ -64,9 +68,11 @@ group-digits = false,
 \RequirePackage{tabularx}
 \RequirePackage{multirow}
 
+
 % Nice images, figures, and listings
 % Figurer og tabeller
 \RequirePackage{graphicx} % Denne pakken er standard for å kunne laste inn figurfiler med ulike formater
+\RequirePackage{makecell}
 % Løsne opp på de alt for strenge standardinstillingene for plassering av figurer og tabeller (floats) i LaTeX-kjernen
 \renewcommand{\topfraction}{.85}
 \renewcommand{\bottomfraction}{.7}
@@ -84,8 +90,8 @@ group-digits = false,
 \RequirePackage[all]{xy}
 \RequirePackage{wrapfig}
 \RequirePackage{fancyvrb}
-\RequirePackage{listings}
-\RequirePackage{listingsutf8}
+%\RequirePackage{listings}
+%\RequirePackage{listingsutf8}
 \RequirePackage{subfig}
 \RequirePackage{mathtools}% automatically loads amsmath
 \RequirePackage{lipsum}
@@ -127,7 +133,8 @@ group-digits = false,
 
 % Links
 \RequirePackage{xurl}
-\RequirePackage[colorlinks=true,allcolors=blue, hidelinks, pdftex, pdfborderstyle={/S/U/W 0}]{hyperref}
+%\RequirePackage[colorlinks=true,allcolors=blue, hidelinks, pdftex, pdfborderstyle={/S/U/W 0}]{hyperref}
+\RequirePackage[colorlinks=true,allcolors=blue, hidelinks, pdfborderstyle={/S/U/W 0}]{hyperref} % Used for XeLaTeX
 % Noen av navnene for autoreferanser mangler på norsk, så vi ordner opp i det.
 \addto\extrasnorsk{%
 \def\figureautorefname{figur}%
@@ -203,8 +210,11 @@ group-digits = false,
   \end{tikzpicture}%
 
   \begin{minipage}[t]{0.15\textwidth}
+  \vspace{1.4cm}
+  %0.45cm for bunn-align med tittel, 1.4cm for topp
   \includegraphics[width=2.0cm]{figurer/jolyu.pdf}
-  \vspace{13cm}\\
+  \vspace{3.25cm}\\
+  %3.25cm for sort-boks-topp align undertittel, 3.6cm for ntnulogo
   \includegraphics[width=2.0cm]{elsys-teknisk}
   %\includegraphics[width=2.0cm]{elsys-teknisk}  
 
@@ -230,9 +240,9 @@ group-digits = false,
 }
 
 % ----- For usage with pandoc converted documents -----------------------------
-
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+%
+%\providecommand{\tightlist}{%
+%  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
 % -----------------------------------------------------------------------------
 % ------------ User commands

@@ -1,47 +1,40 @@
 \section{Konsept}
 \label{sec:konsept}
-\textit{En overordnet beskrivelse av \textbf{hva} systemet skal gjøre. Her legges vekt på hvordan systemet skal oppføre seg, ikke \textbf{hvordan} det er designet.}
+%En overordnet beskrivelse av hva systemet skal gjøre. Her legges vekt på hvordan systemet skal oppføre seg, ikke hvordan det er designet.
 
-Referer til figur!!!
+Systemet som designes skal kartlegge og dokumentere aktiviteten av fugler. Det skal både kunne brukes i områder med vindturbiner og i områder hvor det planlegges eller vurderes å bygge vindturbiner, hvor det ellers ville vært nødvendig å ansette ornitologer. Dette skal kunne gjøres på en billig og effektiv måte, kontinuerlig hele døgnet. Både mengden fugl i området og når på døgnet det er mest aktivitet skal kunne fastslås. Konseptet er vist i \autoref{fig:konsept}.
 
-Del opp i avsnitt? Litt før og litt etter figuren. 
-Spørs om det er nok tekst her til å ha et helt avsnitt over og under (i den første delen av konseptteksten), blir kanskje en setning over og resten under.
-
-Evt. inkluder en punktliste på hva den skal gjøre.
-
-Skal mer inkluderes? Virker kort.
-
-Systemet som skal designes skal overvåke fugleaktiviteten over et område. \todo{Flyttes til fremtidige forbedringer?}Flere enheter av den samme typen skal kunne kombineres for å dekke et større areal. Et infrarødt kamera skal kontinuerlig ta bilder av himmelen for å se etter varmesignaturer fra fugler. Varmesignaturen fra en fugl spores fra bilde til bilde og loggføres, og alle fugler i bildet spores individuelt. Systemet skal også innhente grunnleggende værdata: nedbør, vind, vindretning, temperatur, luftfuktighet og lufttrykk. Data fra fugleaktiviteten og værforholdene skal overføres trådløst og presenteres på en nettside.
+%ny figur? illustrasjon av vindmølle med fugler og sensor, som gjør det den gjør, viser liksom situasjonen den brukes i og sånn
+%dette vil medføre at figuren som nå er i konsept flyttes til design
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{konsept/Diagram_konsept.pdf}
-    \caption{Blokkdiagram for konseptet.}
+    \includegraphics[width=0.9\textwidth]{konsept/diagram_konsept_v4.png}
+    \caption{Blokkdiagram for konseptet. Fuglene blir detektert av et infrarødt kamera og bildene prosesseres. Dataen blir så sendt videre til en database og vist fram på en nettside.}
     \label{fig:konsept}
 \end{figure}
- 
 
-$\mathbb{TEKST} \:\: \mathbb{FRA} \:\: \mathbb{INNLEVERING}$:
+%VELDIG lik den i implementasjon
+%finnes fire versjoner
 
-Systemet skal være i stand til å kunne telle fugler som flyr over et gitt område. Fuglene på himmelen skal telles og loggføres, og spores på en slik måte at en passerende fugl kun telles én gang. Dette oppnås ved at et infrarødt kamera filmer himmelen og eventuelle fuglers varmesignatur mot himmelen. Bildene analyseres i en prosesseringsenhet, som oppdager og sporer fuglene. I tillegg skal systemet inneholde sensorer for å måle værdata. Dette inkluderer nedbør, luftfuktighet, temperatur, trykk, lys, og vind. Data overføres så trådløst til en nettside, hvor den fremstilles til brukere og kan analyseres videre. Systemet kan utvides med flere kameraer for økt dekning, eller flere separate enheter. Et økt dekningsområde gir større muligheter for avansert sporing eller overvåkning av fugleaktivitet, eller for å kunne observere forskjeller i aktivitet i sanntid.
-
-
-
-
-\subsection{Kamera}
-
-Vi skal bruke et infrarødt kamera (IR-kamera) til å detektere den infrarøde strålingen fra fugler. Infrarød stråling er elektromagnetisk stråling med lengre bølgelengde enn synlig lys (700nm-1mm). Infrarød stråling detekterer alle objekter med en temperatur over det absolutte nullpunkt (0K) og opp til 3864K. Vi er mest interessert i temperaturer rundt kroppstemperaturen til fugler (40K https://www.sciencedirect.com/science/article/pii/030096299190122S) \todo{velg én}sett i forhold til omgivelsene fra -15 til 30 C sett i forhold til maks og minimumstemperaturer i trondheim det siste året. Dette tilsvarer langbølge-IR med bølgelengder på $8-15\mu m$. Et IR-kamera bruker Stefan-Boltzmanns lov for å regne ut temperaturen til objektet: $R=\epsilon \sigma T^4$, der R er infrarød stråling (W/$m^2$), T er temperatur i kelvin, $\sigma$ er Boltzmanns konstant og $\epsilon$ er den termiske emissiviteten til objektet som skal måles. For fugler er denne emissiviteten målt til å være ca. 0.95 (Temperature Biology
-of Animals, cossin bowler 1987). 
-
-
-Vi bruker et infrarødt kamera som ser etter varmesignaturen til fugler. Hovedsensor for detektering av fugler. Kameraet skal gi prosseseringsenheten en kontinuerlig sending av video.
-
-
-\subsection{Deteksjon}
-Systemet skal kunne detektere fugler fra en kontinuerlig videostrømm. Fuglene skal 
+Deteksjonen skal foregå med et infrarødt kamera som kontinuerlig tar bilder av himmelen for å se etter varmesignaturer fra fugler. Bildene prosesseres, og varmesignaturen fra hver fugl spores fra bilde til bilde og loggføres. Alle fugler i bildet spores individuelt. Systemet skal også innhente grunnleggende værdata: nedbør, vind, vindretning, temperatur, luftfuktighet og lufttrykk. Data om fugleaktivitet og værforhold skal overføres trådløst og presenteres på en nettside.
 
 
 
-\subsection{Nettside}
+%ting som skal addes:
 
+%
+%
+%
+%
+%
+%
+%
+%
+%
+
+
+
+%tekst fra innleveringen:
+%Systemet skal være i stand til å kunne telle fugler som flyr over et gitt område. Fuglene på himmelen skal telles og loggføres, og spores på en slik måte at en passerende fugl kun telles én gang. Dette oppnås ved at et infrarødt kamera filmer himmelen og eventuelle fuglers varmesignatur mot himmelen. Bildene analyseres i en prosesseringsenhet, som oppdager og sporer fuglene. I tillegg skal systemet inneholde sensorer for å måle værdata. Dette inkluderer nedbør, luftfuktighet, temperatur, trykk, lys, og vind. Data overføres så trådløst til en nettside, hvor den fremstilles til brukere og kan analyseres videre. Systemet kan utvides med flere kameraer for økt dekning, eller flere separate enheter. Et økt dekningsområde gir større muligheter for avansert sporing eller overvåkning av fugleaktivitet, eller for å kunne observere forskjeller i aktivitet i sanntid.
 
