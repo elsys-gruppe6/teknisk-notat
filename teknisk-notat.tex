@@ -19,8 +19,11 @@
 
 \begin{document}
 
+\pagenumbering{gobble}
+
 \maketitle
 
+\pagenumbering{Roman}
 %Automatisk generert innholdsfortegnelse:------------------
 \toc
 
@@ -31,11 +34,11 @@
 Denne malen er ment å gi tips for hvordan skrive en god teknisk rapport som dokumenterer et designet og testet elektronisk system. Den tiltenkte leser er en teknisk kyndig person som har bruk for dokumentasjonen i forbindelse med videreutvikling, vedlikehold, reparasjon eller redesign av systemet.\\
 \\
 Malen er inndelt i de samme kaptiler som bør være med i en teknisk rapport, og innholdet i kapitlene er beskrevet fortløpende.
-\cite{bibelen}
+\cite{bibelen}\todo{Dette må fjernes en gang}
 }
 
 \newpage
-
+\pagenumbering{arabic}
 \input{problemstilling/problemstilling.tex}
 
 \newpage
@@ -56,7 +59,9 @@ Malen er inndelt i de samme kaptiler som bør være med i en teknisk rapport, og
 
 \newpage
 
+\input{konklusjon/konklusjon}
 
+\newpage
 
 % Skal endre til bibtex %
 
