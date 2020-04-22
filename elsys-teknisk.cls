@@ -141,6 +141,7 @@ group-digits = false,
 \def\tableautorefname{tabell}%
 \def\sectionautorefname{avsnitt}%
 \def\subsectionautorefname{underavsnitt}%
+\def\subsubsectionautorefname{underavsnitt}%
 \def\appendixautorefname{vedlegg}
 }
 

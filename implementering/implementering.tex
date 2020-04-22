@@ -14,9 +14,9 @@ Overordnet består systemet av to delsystemer. Det ene delsystemet detekterer og
 \end{figure}
 
 
-\subsection{Raspberry Pi 4}
+\subsection{Prossesseringsenhet}\todo{Burde endres til prosessor eller noe sånt}
 
-Til all databehandling brukes en Raspberry Pi 4. Dette er en liten PC på ett enkelt kretskort, men som tilbyr nok minne og prosesseringskraft til dette systemets formål. Pi-en utfører all bildebehandling samt prosessering av værdata og trådløs overføring av data til databasen. I dette systemet brukes en Raspberry Pi modell 4B, med 4GB RAM og en 64-bits prosessor.
+Til databehandling brukes en Raspberry Pi 4. Dette er en liten PC på ett enkelt kretskort, men som tilbyr nok minne og prosesseringskraft til dette systemets formål. Pi-en utfører all bildebehandling samt prosessering av værdata og trådløs overføring av data til databasen. I dette systemet brukes en Raspberry Pi modell 4B, med 4GB RAM og en 64-bits prosessor.
 
 \begin{figure}[H]
     \centering
@@ -58,28 +58,32 @@ Programmet som kjøres på Pi-en er skrevet i Python. Hovedflyten til programmet
 
 \subsubsection{Bildeprosessering}
 
-Til bildeprosessering brukes OpenCV, som er et bibliotek skapt for sanntidsdatasyn \todo{finne bedre ord enn datasyn? [tror det heter datasyn, ref TDT4265 - Datasyn og dyp læring ved NTNU]}. En datamaskin har ingen måte å kunne kjenne igjen en fugl fra et bilde. Dette er en veldig komplisert oppgave ingeniører har jobbet med i årevis. OpenCV tilbyr en god del verktøy for å kunne løse dette problemet. Flyten for bildeprosessesseringen er illustrert i \autoref{fig:bildeprosessering}.  \todo{skriv mer om opencv med kilde?}
+En datamaskin har ingen måte å kunne kjenne igjen en fugl fra et bilde. Dette er et eksempel på en veldig komplisert type problemstilling ingeniører har jobbet med i årevis. OpenCV tilbyr en god del verktøy, som implementerte algoritmer for filtrering, som hjelper oss til å kunne løse dette problemet. 
+
+Flyten for bildeprosessesseringen er illustrert i \autoref{fig:bildeprosessering}.  \todo{skriv mer om opencv med kilde?}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{implementering/bildeprosessering.png}
     \caption{Caption}
     \label{fig:bildeprosessering}
-\end{figure} \todo{return? ikke end?}+
+\end{figure} \todo{return? ikke end? Burde være på norsk?}
 
-OpenCV  har en innbygd funksjon for å lese inn videostrømmer slik at IR-kameraet kan benyttes \todo{ir-kamera?} som om det var et vanlig webkamera. Det er altså forholdsvis enkelt å få en bildestrøm inn til Pi-en. Dermed blir problemet for koden i hovedsak hvordan denne strømmen av bilder skal filtreres og analyseres for å kunne detektere blobs og hvordan disse blobbene kan spores fra bilde til bilde. En blob, eller klump på norsk, er en samling av piksler som skiller seg fra bakgrunnen. Et eksempel på dette er en svart fugl mot en blå himmel. Det er ganske enkelt for et menneske å forstå dette, og kunne se hvor denne blobben befinner seg. Oppgaven blir mer krevende når en datamaskin skal gjøre det. 
+OpenCV  har en innbygd funksjon for å lese inn videostrømmer slik at IR-kameraet kan benyttes som om det var et vanlig webkamera. Det er altså forholdsvis enkelt å få en bildestrøm inn til Pi-en. Dermed blir problemet for koden i hovedsak hvordan denne strømmen av bilder skal filtreres og analyseres for å kunne detektere blobs og hvordan disse blobbene kan spores fra bilde til bilde. En blob, eller klump på norsk, er en samling av piksler som skiller seg fra bakgrunnen. Et eksempel på dette er en svart fugl mot en blå himmel. Det er ganske enkelt for et menneske å forstå dette, og kunne se hvor denne blobben befinner seg. Oppgaven blir mer krevende når en datamaskin skal gjøre det. 
 
-For å lettere og mer presist kunne analysere blobs må bildene filtreres. Målet er å filtrere bort støy fra andre kilder enn det som er interessant. På denne måten vil skillene mellom blobs og bakgrunn bli tydeligere. Målet vil være å ha et svart-hvitt bilde som kan brukes til å detektere blobs. \todo{utfyll når vi faktisk vet nøyaktig hvordan}
+For å lettere og mer presist kunne analysere blobs må bildene filtreres.
 
-Videre kan innebygde funksjoner i OpenCV som  detekterer blobs i bilder brukes. OpenCV gir flere metoder for å utføre dette, men i første omgang velges den simple ''blob detector''. Denne tar inn et bilde og parametere \todo{finne ut hva den faktisk tar inn og hva keypoints faktisk inneholder} og returnerer en liste over keypoints, altså en liste over koordinatene til slike blobs.
+
+Videre kan innebygde funksjoner i OpenCV som  detekterer blobs i bilder brukes. OpenCV gir flere metoder for å utføre dette, men i første omgang velges simple blob detector. Denne tar inn et bilde og parametere \todo{finne ut hva den faktisk tar inn og hva keypoints faktisk inneholder} og returnerer en liste over keypoints, altså en liste over koordinatene til slike blobs.
 \todo{legge inn kode}
+
 
 \subsubsection{Tracking}
 \label{subsubsec:tracking}
 For å unngå at programmet teller samme fugl flere ganger, selv om fuglen er i videostrømmen i flere bilder etter hverandre, brukes tracking. Måten trackingen fungerer er at den gis koordinater til et område på skjermen der det finnes et objekt, som her vil være en fugl. Dette objektet vil den kjenne igjen når neste bilde kommer, og den vil klare å følge objektet gjennom videostrømmen.
 Siden det kan være flere fugler i bildet samtidig trengs det å kunne tracke alle sammen. Dette gjøres ved å lage et multi-tracker objekt som samler flere trackere som følger forskjellige fugler. Ved bruk av flere trackere er det viktig at samme fugl ikke trackes med flere trackere slik at en fugl blir talt flere ganger. Ved å ikke opprette trackere der det allerede finnes en tracker fra før av unngås dette. 
 
-Når en fugl skal trackes behøves koordinatene til fuglen i bildet. Dette fåes fra blob-detection koden. Blob-detection koden returnerer et keypoint, som inneholder senter og radius til bloben. Trackerfunksjonen tar inn en firkantet boks som må omslutte bloben helt. Derfor er det behov for en funksjon som kan gjøre om keypoints til bokser. Dette er vist i \autoref{code:keypointsToBoxes}. Funksjonen returnere en liste som inneholder all info om boksene som trengs til trackingen.
+Når en fugl skal trackes behøves koordinatene til fuglen i bildet. Dette fås fra blob-detection koden. Blob-detection koden returnerer et keypoint, som inneholder senter og radius til bloben. Trackerfunksjonen tar inn en firkantet boks som må omslutte bloben helt. Derfor er det behov for en funksjon som kan gjøre om keypoints til bokser. Dette er vist i \autoref{code:keypointsToBoxes}. Funksjonen returnere en liste som inneholder all info om boksene som trengs til trackingen.
 \begin{code}
 \begin{minted}[mathescape,
                linenos,
@@ -90,13 +94,13 @@ Når en fugl skal trackes behøves koordinatene til fuglen i bildet. Dette fåes
     import cv2
     
     def KeypointsToBoxes(keypoints):
-        boxes = []
-        for keypoint in keypoints:
-            point = keypoint.pt
-            size = int(keypoint.size())
-            box = (int(point[0])- (size/2),int(point[1]) - (size/2),size,size)
-            boxes.append(box)
-        return boxes
+    boxes = []
+    for keypoint in keypoints:
+        point = keypoint.pt
+        size = int(keypoint.size)
+        box = (int(point[0])- (size/2),int(point[1]) - (size/2),size,size)
+        boxes.append(box)
+    return boxes
 \end{minted}
 \caption{Hvordan keypoints fra blob-detection blir gjort om til bokser som kan brukes i tracking.}
 \label{code:keypointsToBoxes}
@@ -113,13 +117,18 @@ Når alle keypoints er gjort om til bokser, må det finnes ut hvilket blobber so
                framesep=2mm]{python}
     def removeTrackedBlobs(keypoints, boxes):
         newKeypoints = []
+        diff = []
         try:
             for points in keypoints:
-                x,y = points.pt
+                x = points.pt[0]
+                y = points.pt[1]
                 for box in boxes:
                     xb,yb,wb,hb = box
-                    if xb<x and x<xb+wb and yb<y and y<yb+hb:
-                        newKeypoints.append(points)
+                    if xb<x and x<xb+wb and yb<y and     y<yb+hb:
+                        diff.append(points)
+            for point in keypoints:
+                if point not in diff:
+                    newKeypoints.append(point)
         except:
             pass
         return newKeypoints
@@ -130,8 +139,29 @@ Når alle keypoints er gjort om til bokser, må det finnes ut hvilket blobber so
 
 OpenCV i Python har flere funksjoner som hjelper til med denne trackinga, og har flere forskjellige metoder for tracking, som varierer i nøyaktighet og tidsbruk.
 
-For å opprette en tracker for en blob kalles funksjonen createTrackerByName som ligger i trackerFunc.py. Denne funksjonen mottar hvilken type tracker som skal brukes, hvilket bilde bloben er i, og for hvilket område i bildet bloben befinner seg. Denne trackeren legges inn i en multitracker som kalles multiTracker. Når et nytt bilde er prosessert brukes funksjonen multiTracker.update(), som finner ut hvor blobene som ligger i multitrackeren har beveget seg. Alle blobbene som blir oppdaget og ikke allerede ligger i multitrackeren blir lagt til. Når en blob forsvinner ut av bilde ønskes det å fjerne trackeren til den spesifikke blobben fra multitrackeren. Det finnes ingen funksjoner for å få til dette i openCV, men multitrackeren kan slettes. Det som da må gjøres er å opprette en ny multitracker når dette trengs, og å legge til trackere for alle blobber som fortsatt er i bildet.
+For å opprette en tracker for en blob kalles funksjonen createTrackerByName som ligger i trackerFunc.py. Denne funksjonen mottar hvilken type tracker som skal brukes. I tillegg må man initialisere trackeren ved å si hvilket bilde bloben er i koordinater til en boks som skal omslutte bloben. Siden det kan være flere fugler i et bilde er det nødvendig å kunne lage flere trackere, og lagre disse sammen.
 
+OpenCV har en multitrackerklasse, men denne er ikke tilfredsstillende, da det ikke kan slettes trackere fra et multitracker-objekt. Derfor er en ny klasse implementert i python med de ønskede egenskapene. En del av implementeringen av denne klassen kan sees i \autoref{code:newTracker}. Klassen består av to lister. Listen trackers består av enkle trackere, og listen trackerFail består av tall. Disse tallene forteller i hvor mange bilder etter hverandre trackeren har mislyktes med å følge en blob. Når blob-detection algoritmen har kjørt legges alle nye blobs til med medlemsfunksjonen add.
+\begin{code}
+\begin{minted}[mathescape,
+               linenos,
+               numbersep=5pt,
+               gobble=2,
+               frame=lines,
+               framesep=2mm]{python}
+    class NewTracker():                     
+        def __init__(self):
+            self.trackers = []             
+            self.trackerFail = []
+    
+        def add(self, trackerObj):          
+            self.trackers.append(trackerObj)
+            self.trackerFail.append(0)
+\end{minted}
+\caption{En del av implementeringen av multitrackeren.}
+\label{code:newTracker}
+\end{code}
+I tillegg har klassen medlemsfunksjonene pop og update. Funksjonen pop fjerner trackere, og update oppdaterer alle trackere. I tillegg til å oppdatere trackerene vil update-funksjonen inkrementere listeelementene i trackerFail som hører til trackere som mislyktes med sporingen sin. Dersom trackeren klarte å følge bloben blir tilhørende trackerFail-element satt til 0. Alle trackere som ikke har detektert bloben sin i 5 bilder på rad vil fjernes fra multitrackeren. Funksjonen update returnerer også en liste med koordinatene til alle trakcerene.
 
 
 \subsubsection{Telemetri}
@@ -230,11 +260,15 @@ For enkelt å kunne koble alle sensorene til Raspberry Pi-en, brukes et kretskor
 
 \subsection{Nettside}
 
+\todo{Bilde eller figur av nettside}
+
 Nettsiden har som mål å vise informasjonen som hentes inn av både fugletelleren og værstasjonen. Til dette brukes Python-rammeverket Dash \cite{dash}. Dash er laget spesifikt for å vise og prosessere store mengder data i enkle grafer og oppgi disse på en statisk nettside. 
 
 Det kjøres et backend-program som har som oppgave å hente all data fra databasen som er nevnt i \autoref{subsubsec:telemetri}, telemetri. Deretter prosesserer og filtrerer programmet data slik at det ikke bare er punktdata, men data basert på timer, dager, måneder osv. Dette krever kraftige sortering- og filtreringsalgoritmer. Noen av disse algoritmene er allerede implementert, men noen må også implementeres med vanlige funksjoner i Python. 
 
-Bilde? ye
+Store deler av nettsiden fungerer på samme måte. Det kjøres en funksjon om du velger noe data, eller ber nettsiden hente et nytt datasett. Det vil derfor kun gis noen eksempler i avsnittene under, og hele nettsiden kan leses på GitHub\todo{Må legge inn URL og kilde.}
+
+Bilde?\todo{Kanskje et flytdiagram?}
 
 \subsubsection{Rammeverket}
 
@@ -320,3 +354,21 @@ Den mest intense sorteringen er å samle all punktdataen til måneder (eller uke
 
 \subsubsection{Database}
 
+\subsection{Strukturelt}
+
+Stativet boksen og værstasjonen skal festes til er vist i figur \ref{fig:Stativ}. Her vil boksen festes til stangen ca ?? m over bakken mens øverst ?? m over bakken er modulene til værstasjonen festet. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\textwidth]{implementering/Stativ.jpg}
+    \caption{Stativ for boks og værstasjon.\todo{Sett inn bilde}}
+    \label{fig:Stativ}
+\end{figure}
+
+En 3D-modell av boksen er vist i figur \ref{fig:boks}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\textwidth]{}
+    \caption{En 3D modell av boksen som skal holde kamera og prosesseringsenheten.}
+    \label{fig:boks}
+\end{figure}
