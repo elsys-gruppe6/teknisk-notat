@@ -1,191 +1,375 @@
 \section{Implementering}
 \label{sec:implementering}
-\textit{Enda mer \textbf{hvordan} kommer her. Nå er vi på detaljnivå med detaljerte kretsskjema og dokumentasjon av algoritmer og kode. Større mengder kildekode er ikke aktuelt å ta med, men kortere snutter for å beskrive spesielle løsninger kan tas med. Resten av kildekoden legges ved som vedlegg. \\
-\\
-Detaljer puttes i vedlegg.}
 
-Overordnet består systemet av to delsystemer. Det ene delsystemet detekterer og sporer fugleaktivitet med et varmekamera, og det andre delsystemet henter inn værdata. Begge disse systemene sender data til en Raspberry Pi 4, som så prosesserer dataen og sender det videre til en database, før det blir framstilt på en nettside. 
+Systemets overordnede struktur kan ses i \autoref{fig:blokkDig}.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{implementering/implementering.png}
-    \caption{Overordnet flytskjema for hele systemet.}
-    \label{fig:implementasjon}
-\end{figure}
+%Overordnet består systemet av to delsystemer. Det ene delsystemet detekterer og sporer fugleaktivitet med et varmekamera, og det andre delsystemet henter inn værdata. Begge disse systemene sender data til en prosesseringsenhet, som så prosesserer dataen og sender det videre til en database, før det blir framstilt på en nettside. \todo{ganske gjentagende fra kap 3, mulig sløyfe}
 
 
-\subsection{Prossesseringsenhet}\todo{Burde endres til prosessor eller noe sånt}
+\subsection{Prosesseringsenhet}\label{sec:impl:prosessor}
 
-Til databehandling brukes en Raspberry Pi 4. Dette er en liten PC på ett enkelt kretskort, men som tilbyr nok minne og prosesseringskraft til dette systemets formål. Pi-en utfører all bildebehandling samt prosessering av værdata og trådløs overføring av data til databasen. I dette systemet brukes en Raspberry Pi modell 4B, med 4GB RAM og en 64-bits prosessor.
+Til databehandling brukes en Raspberry Pi 4. 
+Dette er en liten PC på ett enkelt kretskort, men som tilbyr nok minne og prosesseringskraft til dette systemets formål. 
+Dette tilfredsstiller systemkrav \idref{id:prosessor}. 
+Pi-en utfører all bildebehandling samt prosessering av værdata og trådløs overføring av data til databasen. 
+I dette systemet brukes en Raspberry Pi modell 4B, med 4GB RAM og en 64-bits prosessor\cite{raspberry}. 
+Operativsystemet som brukes er Raspbian Buster med desktop \cite{raspbian}, som er optimalisert for bruk på en Raspberry Pi.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{implementering/pi4.png}
-    \caption{Raspberry Pi 4.}
+    \caption{Prosesseringsenheten, en Raspberry Pi 4B.}
     \label{fig:pi}
 \end{figure}
 
 %en referanse til Pi4? datablad elns?
 
-\subsection{Kamera}
+\subsection{Kamera}\label{sec:impl:kamera}
 
-Det infrarøde kameraet som benyttes er et FLIR (Forward-Looking InfraRed) C3-kamera. C3 er
-håndholdt, men kan også brukes koblet til en datamaskin, her en Raspberry Pi. Kameraet har en IR-sensor med synsvinkel på $41\degree \text{x} 31\degree$, bilderate på 9 Hz, og kan detektere temperaturforskjeller på under $0.1\degree$C. Kameraet vil kontinuerlig ta bilder med en valgbar frekvens, som optimaliseres for å gi best mulig deteksjon. Samtidig må denne begrenses slik at bildebehandlingen ikke havner bakpå. Bildene overføres til Pi-en via USB-kabel.
+Det infrarøde kameraet som benyttes er et FLIR C3-kamera. 
+Kameraet er håndholdt, men kan også brukes koblet til en datamaskin, her en Raspberry Pi. 
+Kameraet har en IR-sensor med synsvinkel på $41\degree \text{ x } 31\degree$, bilderate på 9 Hz, og kan detektere temperaturforskjeller på under $0.1\degree$C. 
+Kameraet vil kontinuerlig ta bilder med en valgbar frekvens, som optimaliseres for å gi best mulig deteksjon. 
+Samtidig kan denne begrenses slik at bildebehandlingen ikke blir overbelastet. 
+Bildene overføres til Pi-en via en USB-kabel som vist i systemkrav \idref{id:internoverføring}.
 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{implementering/c3.png}
-    \caption{FLIR C3.}
+    \caption{IR-kameraet som systemet bruker, en FLIR C3.}
     \label{fig:c3}
 \end{figure}
 
 
-\subsection{OpenCV}
+\subsection{Programvare}\label{sec:impl:programvare} \todo{fiks figurer}
 
-OpenCV er et bibliotek som gir utviklere rask og enkel tilgang til avanserte algoritmer innen maskinlæring og datasyn. Disse kan brukes til å filtrere bilder, detektere objekter og utføre tracking fra bilde til bilde. \todo{fyll på mer info}
+Hovedprogrammet kjører på Pi-en og har som mål å analysere bildestrømmen fra kameraet og sende informasjon om antall fugler til databasen (ref?). Til bildebehandlingen brukes Python-rammeverket \textit{OpenCV} \cite{OpenCV}. OpenCV er laget for å gi utviklere rask og enkel tilgang til avanserte algoritmer innen maskinlæring og datasyn. Dette rammeverket kan dermed brukes til bilderprosessering i form av filtrering, deteksjon av objekter og sporing, eller \textit{tracking}, i sanntid. \todo{Burde det om openCV fjernes herifra og heller skrive litt mer utfyllende i kap om bildepross.?}
 
-\subsection{Programvare} \todo{fiks figurer}
-
-Programmet som kjøres på Pi-en er skrevet i Python. Hovedflyten til programmet er vist i \autoref{fig:hovedprogram}. Ved oppstart kjører programmet gjennom en startprosedyre før det går inn i en loop med sykliske hendelser. Oppsettfasen initialiserer blant annet logging, telemetri, sensorer og bildeprosessering, slik at disse tingene er satt i gang og testet og dermed klar til bruk. Deretter forsetter programmet å kjøre gjennom en rekke sykliske hendelser for bildegjennkjenning, sensorer samt telemetri og logging. Mer om dette etterhvert.\todo{fyll inn noe om error-biten}
+Den overordnede flyten til programmet er vist i \autoref{fig:hovedprogram}. 
+Der kan det ses at programmet først kjører gjennom en oppstartsprosedyre før det går inn i en loop med sykliske hendelser.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{implementering/hovedprogram.png}
-    \caption{Flytskjema for det overordnede systemet.}
+    \includegraphics[width=0.2\textwidth]{implementering/Program/hovedprogram.png}
+    \caption{Flytskjema for programmet.}
     \label{fig:hovedprogram}
 \end{figure}
 
-\subsubsection{Bildeprosessering}
-
-En datamaskin har ingen måte å kunne kjenne igjen en fugl fra et bilde. Dette er et eksempel på en veldig komplisert type problemstilling ingeniører har jobbet med i årevis. OpenCV tilbyr en god del verktøy, som implementerte algoritmer for filtrering, som hjelper oss til å kunne løse dette problemet. 
-
-Flyten for bildeprosessesseringen er illustrert i \autoref{fig:bildeprosessering}.  \todo{skriv mer om opencv med kilde?}
+I oppstartsfasen initialiseres en loggfil (se \autoref{sec:impl:programvare:logging}) og en link til kameraet (se flytskjema i \autoref{fig:hovedprogram_oppstart}).
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{implementering/bildeprosessering.png}
-    \caption{Caption}
-    \label{fig:bildeprosessering}
-\end{figure} \todo{return? ikke end? Burde være på norsk?}
+    \includegraphics[width=0.3\textwidth]{implementering/Program/oppstart.png}
+    \caption{Flytskjema for oppsettet til programmet.}
+    \label{fig:hovedprogram_oppstart}
+\end{figure}
 
-OpenCV  har en innbygd funksjon for å lese inn videostrømmer slik at IR-kameraet kan benyttes som om det var et vanlig webkamera. Det er altså forholdsvis enkelt å få en bildestrøm inn til Pi-en. Dermed blir problemet for koden i hovedsak hvordan denne strømmen av bilder skal filtreres og analyseres for å kunne detektere blobs og hvordan disse blobbene kan spores fra bilde til bilde. En blob, eller klump på norsk, er en samling av piksler som skiller seg fra bakgrunnen. Et eksempel på dette er en svart fugl mot en blå himmel. Det er ganske enkelt for et menneske å forstå dette, og kunne se hvor denne blobben befinner seg. Oppgaven blir mer krevende når en datamaskin skal gjøre det. 
+Deretter forsetter programmet å kjøre gjennom en rekke sykliske hendelser for bildegjenkjenning og tracking. 
+Dette krever at man tar i bruk flere av de avanserte algoritmene OpenCV tilbyr. 
+Mer om bildeprosessering i \autoref{sec:impl:programvare:bildepro}. 
+Flyten til hovedloopen kan sees i \autoref{fig:hovedprogram_loop}.
 
-For å lettere og mer presist kunne analysere blobs må bildene filtreres.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{implementering/Program/main_loop.png}
+    \caption{Flytskjema til hovedløkken.}
+    \label{fig:hovedprogram_loop}
+\end{figure}
 
+OpenCV har en innbygd funksjon for å lese inn videostrømmer, slik at IR-kameraet kan benyttes som om det var et vanlig webkamera. 
+Det er altså forholdsvis enkelt å få en bildestrøm inn til Pi-en, og kode for dette er vist i \autoref{code:impl:programvare:bildestrøm}. 
+Problemet blir dermed i hovedsak å prosessere og analysere disse bildene for å kunne gjenkjenne \textit{blobs} og spore disse mellom bildene.
 
-Videre kan innebygde funksjoner i OpenCV som  detekterer blobs i bilder brukes. OpenCV gir flere metoder for å utføre dette, men i første omgang velges simple blob detector. Denne tar inn et bilde og parametere \todo{finne ut hva den faktisk tar inn og hva keypoints faktisk inneholder} og returnerer en liste over keypoints, altså en liste over koordinatene til slike blobs.
-\todo{legge inn kode}
-
-
-\subsubsection{Tracking}
-\label{subsubsec:tracking}
-For å unngå at programmet teller samme fugl flere ganger, selv om fuglen er i videostrømmen i flere bilder etter hverandre, brukes tracking. Måten trackingen fungerer er at den gis koordinater til et område på skjermen der det finnes et objekt, som her vil være en fugl. Dette objektet vil den kjenne igjen når neste bilde kommer, og den vil klare å følge objektet gjennom videostrømmen.
-Siden det kan være flere fugler i bildet samtidig trengs det å kunne tracke alle sammen. Dette gjøres ved å lage et multi-tracker objekt som samler flere trackere som følger forskjellige fugler. Ved bruk av flere trackere er det viktig at samme fugl ikke trackes med flere trackere slik at en fugl blir talt flere ganger. Ved å ikke opprette trackere der det allerede finnes en tracker fra før av unngås dette. 
-
-Når en fugl skal trackes behøves koordinatene til fuglen i bildet. Dette fås fra blob-detection koden. Blob-detection koden returnerer et keypoint, som inneholder senter og radius til bloben. Trackerfunksjonen tar inn en firkantet boks som må omslutte bloben helt. Derfor er det behov for en funksjon som kan gjøre om keypoints til bokser. Dette er vist i \autoref{code:keypointsToBoxes}. Funksjonen returnere en liste som inneholder all info om boksene som trengs til trackingen.
-\begin{code}
-\begin{minted}[mathescape,
-               linenos,
-               numbersep=5pt,
-               gobble=2,
-               frame=lines,
-               framesep=2mm]{python}
-    import cv2
+\begin{listing}[!htb]
+\begin{minted}{python}
+    vc = cv2.VideoCapture(0)            #starter bildestrøm fra kamera
     
-    def KeypointsToBoxes(keypoints):
-    boxes = []
-    for keypoint in keypoints:
-        point = keypoint.pt
-        size = int(keypoint.size)
-        box = (int(point[0])- (size/2),int(point[1]) - (size/2),size,size)
-        boxes.append(box)
-    return boxes
+    if vc.isOpened():                   #sjekker om kameraet er åpnet
+        rval, frame = vc.read()         #leser bilde fra kamera
+    else:
+        rval = False                    #setter rval til False fordi kameraet ikke ble åpnet
+    
 \end{minted}
-\caption{Hvordan keypoints fra blob-detection blir gjort om til bokser som kan brukes i tracking.}
+\caption{Kodeeksempelet viser hvordan man kan bruke OpenCV hente inn bilder fra en videostrøm.}
+\label{code:impl:programvare:bildestrøm}
+\end{listing}
+
+
+\subsubsection{Bildeprosessering}\label{sec:impl:programvare:bildepro}
+
+En datamaskin har ingen måte å kunne kjenne igjen en fugl fra et bilde. 
+Dette er et eksempel på en veldig komplisert type problemstilling ingeniører har jobbet med i årevis. 
+OpenCV tilbyr en god del verktøy, deriblant implementerte algoritmer for filtrering, som hjelper oss til å kunne løse dette problemet. 
+\todo{repetisjon?}
+
+Flyten for bildeprosesseringen er illustrert i \autoref{fig:bildeprosessering}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{implementering/Program/bildepros.png}
+    \caption{Flyten til bildeprosesseringen.}
+    \label{fig:bildeprosessering}
+\end{figure}
+
+For å lettere og mer presist kunne analysere \textit{blobs} må bildene filtreres. 
+Dette er beskrevet i \autoref{sec:impl:programvare:filtrering}. 
+Deretter kan man utføre ''blob deteksjon'' (se \autoref{sec:impl:programvare:blob-detection}) og tracking (se \autoref{sec:impl:programvare:tracking}). 
+Dette gjøres ved at man først kjører trackinalgoritmen for å spore \textit{blobs} fra tidligere frames, før man kjører blob detection og starter tracking av nye \textit{blobs}. 
+
+\subsubsection{Filtrering}\label{sec:impl:programvare:filtrering}
+\todo{skriv litt overodnet om hva som er måler (pseudokode / liste}
+
+For å oppnå best mulig deteksjon av fugler, filtreres bildene for å redusere støy og annen informasjon som ikke hjelper med avgjøre hvorvidt det fugl i bildet. 
+
+Algoritmen som gjør hoveddelen av filteringen heter Otsu's metode\cite{otsu}. 
+Det algoritmen gjør er å regne ut en terkselverdi for hvert bilde, som så kan brukes for å gjøre bilde om til sort-hvit fra gråskala. 
+Bilde blir gjort om til gråskala ved å bruke funksjonen \python{cvtColor()}, som er en innebygd funskjon i OpenCV. 
+Den matematiske sammenhengen under \eqref{Binarization} sier hvordan terskelverdien brukes til å forvandle bilde om til sort-hvit. 
+I den sammenhengen er $1$ svart og $0$ hvit. 
+Funksjonen $f(x,y)$ gir fargeverdien til pikslene i gråskalabilde og funksjonen $dst(x,y)$ gir fargeverdiene til bilde i sort-hvit. 
+Variablen $T$ er terskelverdien. 
+
+
+\todo{forklar hvordan cvtColor() 
+fungerer}
+
+Otsu's metode fungerer ved å først dele bilde inne i to klasser, bakgrunn og forgrunn. 
+Deretter utregnes variansen i fargeverdier i begge klassene og i mellom klassene. 
+En terskelverdi velges så slik at variansen innad i klassen minimeres, og variansen mellom klassene maksimere. 
+For mer utdypning på hvordan algoritmen fungerer se \cite{otsu}.
+Implementasjonen av algoritmen er gitt i kodeeksempel \ref{code:impl:programvare:manual_otsu_binary}
+
+
+\begin{align}
+    dst(x,y)= \begin{cases} 
+     1 \text{ hvis } f(x,y) > T\\
+               0 \text{ ellers}
+   \end{cases}\label{Binarization}
+\end{align}
+
+\todo{savner mer detaljer om otzu's metode. Hva skjer når kodeeksempelet kjører?}
+
+
+\begin{listing}[!htb]
+\begin{minted}{python}
+def manual_otsu_binary(img):
+    '''Otsu binarization function by calculating threshold'''
+    blur = cv2.GaussianBlur(img, (KERNEL_SIZE, KERNEL_SIZE), 0)  
+    
+    #gaussisk uskarphet (eng: gaussian blur)
+
+    #finner den normaliserte_histogrammet for den kumulativedistribusjonsfunksjonen.
+    hist = cv2.calcHist([blur], [0], None, [256], [0, 256])
+    hist_norm = hist.ravel() / hist.max()
+    Q = hist_norm.cumsum()
+    bins = np.arange(256)
+    fn_min = np.inf
+    thresh = -1
+
+    for i in range(1, 255):
+        p1, p2 = np.hsplit(hist_norm, [i])  #sannsynligheter 
+        q1 = Q[i]
+        q2 = Q[255] - q1  # kumulative sum av klassene
+        b1, b2 = np.hsplit(bins, [i])  # vekter 
+        
+        # finner middelverdiene og variansene
+        m1 = np.sum(p1 * b1) / q1
+        m2 = np.sum(p2 * b2) / q2
+        v1, v2 = np.sum(((b1 - m1) ** 2) * p1) / q1, np.sum(((b2 - m2) ** 2) * p2) / q2
+        # Renger ut minimum for funksjonen. 
+        fn = v1 * q1 + v2 * q2
+        if fn < fn_min:
+            fn_min = fn
+            thresh = i
+
+    _, img_thresh1 = cv2.threshold(img, thresh, 255, cv2.THRESH_BINARY)
+    return img_thresh1
+    
+\end{minted}
+\caption{Implementering av Otsu's metode. }
+\label{code:impl:programvare:manual_otsu_binary}
+\end{listing}
+\todo{vi må dobbeltsjekke matten til det filteret det, for det er mulig det ikke stemmer 100 \%}
+
+
+\subsubsection{Blob deteksjon}\label{sec:impl:programvare:blob-detection}
+
+Rammeverket OpenCV brukes også til blob deteksjon. Funksjonen som brukes fra OpenCV til dette, er "simple blob detector".\todo{hva er simple blob detection?} 
+I \autoref{code:impl:programvare:blob_detection_func} viser hvordan dette er implementert. 
+
+\begin{listing}[!htb]
+\begin{minted}{python}
+#blob detection parameters:
+MAX_AREA = 5000
+MIN_AREA = 10
+
+def init_blob_detector():
+    '''Setup SimpleBlobDetector parameters'''
+    params = cv2.SimpleBlobDetector_Params()
+
+    # Change thresholds for area
+    params.maxArea = MAX_AREA
+    params.minArea = MIN_AREA
+
+    detector = cv2.SimpleBlobDetector_create(params)    #create detector
+
+    return detector
+    
+def blob_detection(img):
+    '''Function to detect blobs. Returns list of keypoints'''
+
+    detector = init_blob_detector()     #oppretter detektor med parametere for blobs
+    keyPoints = detector.detect(img)    #analyserer og lager en liste med nøkkelpunkter
+    
+    return keyPoints
+    
+\end{minted}
+\caption{Implementasjon av blob detection. Merk at koden her er noe redigert for å være mer lesevennlig, for eksempel brukes flere parametere enn areal. }
+\label{code:impl:programvare:blob_detection_func}
+\end{listing}
+
+Som vi kan se i \autoref{code:impl:programvare:blob_detection_func}, oppretter \python{init_blob_detector()}-funksjonen i linje 20 en detektor, hvor vi fritt kan endre på en rekke parametere, som for eksempel areal. \todo{1.referer til openCv dokumentasjon. 2. Hva er en detektor?} 
+Funksjonen \python{blob_detection()} oppretter en slik detektor, og bruker den innebygde detectorfunksjonen til OpenCV til å analysere bildet. 
+Den returnerer så en liste over nøkkelpunkter. \todo{Hvor brukes \python{blob_ detection()}?}
+\todo{Oppretter både \python{init_blob_detector()} og \python{blob_detection} en detector? Hva er forskjellen}
+
+\subsubsection{Tracking}\label{sec:impl:programvare:tracking}
+For å unngå at programmet teller samme fugl flere ganger, brukes \textit{tracking}. 
+Måten trackingen fungerer er at trackeren gis koordinater til et område på skjermen der det finnes et objekt, som her vil være en fugl. 
+Dette objektet vil den kjenne igjen når neste bilde kommer, og den vil klare å følge objektet gjennom videostrømmen.
+Siden det kan være flere fugler i bildet samtidig må det være mulig å tracke alle uavhengig av hverandre. 
+Dette gjøres ved å lage et multi-tracker objekt som samler flere trackere som følger forskjellige fugler. 
+Ved bruk av flere trackere er det viktig at hver fugl kun trackes en gang. Dette er for å ungå at vi teller den samme fuglen flere ganger. 
+Dersom et objekt allerede har en tracker, vil multi-trackeren ungå at det oprettes en ny tracker for samme objekt.
+% Gammel setning: Ved å ikke opprette en tracker der det allerede finnes en, vil det unngås.
+
+Når en fugl skal trackes er koordinatene til fuglen i bildet nødvendig. 
+Dette hentes fra blob-detection koden. 
+Blob-detection-koden returnerer en liste med nøkkelpunkter(keypoints). Nøkkelpunktene inneholder senter og radius til blobbene som er i bildet.
+Trackerfunksjonen, som skal tracke blobbene, tar derimot inn en firkantet boks som må omslutte blobben helt.
+For at trackinga skal fungere optimalt må boksen være en del større enn blobben.
+Derfor er det behov for en funksjon som kan gjøre om nøkkelpunkter til bokser. 
+Dette er vist i \autoref{code:keypointsToBoxes}. 
+Funksjonen \python{KeypointsToBoxes(keypoint)} returnerer en liste som inneholder all info om boksene som trengs til trackingen.
+
+\begin{listing}[!htb]
+\begin{minted}{python}
+    def KeypointsToBoxes(keypoints):
+        boxes = []  #liste for bokser rundt alle keypoints 
+        for keypoint in keypoints:
+        #boksene lages ved hjelp av sentrum og størrelsen på blobbene
+            point = keypoint.pt
+            size = 10 + 3*int(keypoint.size)
+            box = (int(point[0])- (size/2),int(point[1]) - (size/2), size, size)
+            boxes.append(box)
+        return boxes
+\end{minted}
+\caption{Kode som viser hvordan keypoints fra blob-detection blir gjort om til bokser som kan brukes til trackingen.}
 \label{code:keypointsToBoxes}
-\end{code}
+\end{listing}
 
-Når alle keypoints er gjort om til bokser, må det finnes ut hvilket blobber som allerede trackes, Det kan gjøres ved å sjekke om midten av noen av blobbene ligger innenfor boksen til en blob som allerede trackes. Hvis den gjør det må ikke blobben trackes på nytt. I \autoref{code:removeTrackedBlobs} vises det hvordan dette kan gjøres.
+Når alle nøkkelpunkter er gjort om til bokser, må det finnes ut av hvilke blobs som allerede trackes. 
+Det kan gjøres ved å sjekke om midten av noen av blobbene ligger innenfor boksen til en blob som allerede trackes. 
+Hvis den gjør det må ikke blobben trackes på nytt. 
+Funksjon\newline \python{removeTrackedBlobs(keypoints, boxes)} i \autoref{code:removeTrackedBlobs} viser hvordan dette gjøres.
+I denne funksjonen blir nøkkelpunktene til blobbene som allerede trackes fjernet fra listen. 
+Nøkkelpunktene til de resterende blobbene blir returnert.
 
-\begin{code}
-\begin{minted}[mathescape,
-               linenos,
-               numbersep=5pt,
-               gobble=2,
-               frame=lines,
-               framesep=2mm]{python}
+\begin{listing}[!htb]
+\begin{minted}{python}
     def removeTrackedBlobs(keypoints, boxes):
+        #newKeypoints: liste med nye blobs, diff: for allerede tracka blobs
         newKeypoints = []
         diff = []
         try:
+        #Sjekker om blobs er nye. Legges til i tilhørende liste
             for points in keypoints:
                 x = points.pt[0]
                 y = points.pt[1]
                 for box in boxes:
                     xb,yb,wb,hb = box
-                    if xb<x and x<xb+wb and yb<y and     y<yb+hb:
+                    if xb<x and x<xb+wb and yb<y and y<yb+hb:
                         diff.append(points)
             for point in keypoints:
                 if point not in diff:
                     newKeypoints.append(point)
         except:
             pass
+        #returnerer alle nye blobs
         return newKeypoints
 \end{minted}
-\caption{Her vises det hvordan det sjekkes om blobber er nye i bildet eller om de trackes fra et tidligere bilde.}
+\caption{Kodeeksempelet viser hvordan det sjekkes om blobs er nye eller om de trackes fra et tidligere bilde.}
 \label{code:removeTrackedBlobs}
-\end{code}
+\end{listing}
 
-OpenCV i Python har flere funksjoner som hjelper til med denne trackinga, og har flere forskjellige metoder for tracking, som varierer i nøyaktighet og tidsbruk.
+OpenCV har flere funksjoner som hjelper til med denne trackingen, og har flere forskjellige metoder for tracking som varierer i nøyaktighet og tidsbruk.
+For å opprette en tracker av en av disse trackertypene kalles funksjonen \python{createTrackerByName(trackerType)}, der \python{trackerType} er hvilken type tracker som blir brukt. En rask og god tracker som er valgt i dette prosjektet er CSRT-trackeren. 
+Etter trackeren er konstruert, må den initialiseres.
+Dette gjøres ved å si hvilket bilde blobben er i og koordinater til en boks som skal omslutte blobben. 
+Siden det kan være flere fugler i et bilde, er det nødvendig å kunne lage flere trackere, og lagre disse sammen.
 
-For å opprette en tracker for en blob kalles funksjonen createTrackerByName som ligger i trackerFunc.py. Denne funksjonen mottar hvilken type tracker som skal brukes. I tillegg må man initialisere trackeren ved å si hvilket bilde bloben er i koordinater til en boks som skal omslutte bloben. Siden det kan være flere fugler i et bilde er det nødvendig å kunne lage flere trackere, og lagre disse sammen.
+OpenCV har en multitrackerklasse, men denne er ikke optimal, da det ikke kan slettes trackere fra et multitracker-objekt. 
+Derfor er en ny klasse implementert med de ønskede egenskapene. 
+Denne klassen er kalt \python{NewTracker} og en del av implementeringen av denne klassen kan sees i \autoref{code:newTracker}. 
+Klassen består av to lister og en rekke medlemsfunksjoner. 
+Listen \python{trackers} består av enkle trackere, og listen \python{trackerFail} består av heltall som forteller i hvor mange bilder etter hverandre trackeren har mislyktes med å følge en blob. 
+Når blobdeteksjons algoritmen har kjørt, legges det til trackere til alle nye blobs med medlemsfunksjonen \python{add}.
+I tillegg har \python{NewTracker}-klassen medlemsfunksjonene \python{pop} og \python{update}\cite{GitHub}. 
+Funksjonen \python{pop} fjerner trackere, og \python{update} oppdaterer alle trackere. 
+I tillegg til å oppdatere trackerene, vil \python{update}-funksjonen inkrementere listeelementene i \python{trackerFail} som hører til trackere som mislyktes med sporingen sin.
+Dersom trackeren klarte å følge blobben blir tilhørende \python{trackerFail}-element satt til $0$. 
+Alle trackere som ikke har detektert blobben sin i fem bilder på rad, vil fjernes fra multitrackeren. Funksjonen \python{update} returnerer også en liste med koordinatene til alle trackere.
 
-OpenCV har en multitrackerklasse, men denne er ikke tilfredsstillende, da det ikke kan slettes trackere fra et multitracker-objekt. Derfor er en ny klasse implementert i python med de ønskede egenskapene. En del av implementeringen av denne klassen kan sees i \autoref{code:newTracker}. Klassen består av to lister. Listen trackers består av enkle trackere, og listen trackerFail består av tall. Disse tallene forteller i hvor mange bilder etter hverandre trackeren har mislyktes med å følge en blob. Når blob-detection algoritmen har kjørt legges alle nye blobs til med medlemsfunksjonen add.
-\begin{code}
-\begin{minted}[mathescape,
-               linenos,
-               numbersep=5pt,
-               gobble=2,
-               frame=lines,
-               framesep=2mm]{python}
+\begin{listing}[!htb]
+\begin{minted}{python}
     class NewTracker():                     
         def __init__(self):
+        #objektet består av to lister
+        #En med trackerne, og en som vet hvor lenge en tracker har vært ugyldig
             self.trackers = []             
             self.trackerFail = []
     
-        def add(self, trackerObj):          
+        def add(self, trackerObj):
+        #når en ny tracker legges til, legges den inn i self.trackers
+        #i tillegg får den et element i trackerFail-lista,
+        #som viser at den har vært ugyldig i 0 bilder
             self.trackers.append(trackerObj)
             self.trackerFail.append(0)
 \end{minted}
-\caption{En del av implementeringen av multitrackeren.}
+\caption{Konstruktøren og add-funksjonen til multitrackeren.}
 \label{code:newTracker}
-\end{code}
-I tillegg har klassen medlemsfunksjonene pop og update. Funksjonen pop fjerner trackere, og update oppdaterer alle trackere. I tillegg til å oppdatere trackerene vil update-funksjonen inkrementere listeelementene i trackerFail som hører til trackere som mislyktes med sporingen sin. Dersom trackeren klarte å følge bloben blir tilhørende trackerFail-element satt til 0. Alle trackere som ikke har detektert bloben sin i 5 bilder på rad vil fjernes fra multitrackeren. Funksjonen update returnerer også en liste med koordinatene til alle trakcerene.
+\end{listing}
 
 
-\subsubsection{Telemetri}
-\label{subsubsec:telemetri}
+\subsubsection{Logging}\label{sec:impl:programvare:logging}
+I programmet \todo{hvilket program?} er det ikke alltid at ting fungerer som det skal. \todo{Se kommentar}%er det bedre å bytte med: Det er ikke alltid systemet fungerer som det skal.?
+Derfor er det svært nyttig å ha en logging-fil der all viktig informasjon om det programmet har gjort ligger. 
+Både operasjonene programmet gjør vellykket og det programmet ikke har fått til, blir lagt til i logging-fila. 
+Begge heldelsene er nyttig informasjon. 
+Alt som blir lagt til i logging-fila, blir også merket med hvor viktig informasjonen er, for eksempel INFO eller CRITICAL. 
 
-Kommunikasjon mellom Pi-en og nettsiden går via en Firebase-database, levert av Google. Denne kommunikasjonen foregår over Wi-Fi. Dataene Pi-en samler inn blir sendt til databasen som dictionaries og lagret der på et NoSQL-format. En NoSQL-database er ikke så streng med struktur, så den takler bedre endringer i strukturen til dataene. Firebase har laget gode Python-bibliotek som gjør overføring fra Pi-en enkelt. Måten dette fungerer på blir abstrahert bort av ferdigutviklet software, som ligger i firebase\_admin biblioteket. All data i databasen har en nøkkel som er en timestamp som angir når det ble lastet opp i databasen. Når data blir hentet fra databasen kan det sorteres etter nøklene eller de forskjellige dataene som ligger der.
+\subsection{Værstasjon}\label{sec:impl:vaer}
 
-\subsubsection{Logging}
-I programmet er det ikke alltid at ting fungerer som det skal. Derfor er det svært nyttig å ha en logging-fil der all viktig informasjon om det programmet har gjort ligger. De operasjonene programmet gjør vellykket, og som er viktig informasjon som kan brukes senere, i tillegg til hva programmet ikke har fått til er informasjon som blir lagt til i logging-fila. Alt som blir lagt til i logging-fila blir også merket med hvor viktig informasjonen er, for eksempel INFO eller CRITICAL. 
-
-\subsection{Værstasjon}
-
-Værstasjonen vil måle temperatur, trykk og fuktighet i lufta, i tillegg til vindhastighet, vindretning og nedbørsmengde. All dataen sendes via et kretskort til Raspberry Pi-en, som prosesserer dataen og sender det videre til databasen, så informasjonen blir tilgjengelig i nettsiden. \autoref{fig:kretsskjema_pi} viser oppkoblingen til Raspberry Pi-en.
+Værstasjonen vil måle temperatur, trykk og fuktighet i lufta, i tillegg til vindhastighet, vindretning og nedbørsmengde. 
+All dataen sendes via et egendesignet kretskort til prosesseringsenheten, som prosesserer dataen og sender det videre til databasen, så informasjonen blir tilgjengelig i nettsiden. 
+Figur \ref{fig:kretsskjema_pi} viser oppkoblingen av værsensorene til prosesseringsenheten.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{implementering/kretsskjema_pi.png}
-    \caption{Figuren viser oppkoblingen av Raspberry Pi, kretskort, og sensorer. Mer spesifikt her om hva som er koblet til hvilke porter og noder?}
+    \caption{Figuren viser oppkoblingen av værstasjonen til prosesseringsenheten. Anemometeret og nedbørsmåleren er koblet til henholdsvis GPIO pin 5 og 6 på Raspberry Pi-en, mens GPIO pin 2 og 3 brukes til henholdsvis databussen \texttt{SDA} og klokkebuss \texttt{SCL} til kommunikasjon over I2C-bussprotokollen. 3.3 volt spenning hentes også fra Raspberry Pi-en.}
     \label{fig:kretsskjema_pi}
 \end{figure}
 
-\subsubsection{Trykk, temperatur, luftfuktighet}
 
-All luftdataen hentes fra en BME280-sensor fra Bosch, som kan måle både temperatur, trykk og fuktighet i lufta. Kommunikasjonen mellom sensoren og Raspberry Pi-en foregår over en I2C-protokoll, en synkron, seriell bussprotokoll. Figur x og x under viser henholdsvis kretstegning og 3d-modell av luftsensoren.
+\subsubsection{Trykk, temperatur, luftfuktighet}\label{sec:impl:vaer:ttl}
+
+All luftdataen hentes fra en BME280-sensor fra Bosch \cite{bme280}, som kan måle både temperatur, trykk og fuktighet i lufta. 
+Kommunikasjonen mellom sensoren og Raspberry Pi-en foregår over en I2C-protokoll, en synkron, seriell bussprotokoll \cite{i2c}. 
+Denne bussprotokollen tillater toveiskommunikasjon, og bruker 7-bits adresser. 
+I2C tillater dermed opp til 128 enheter ved bruk av kun to ledninger. 
+Figur \ref{fig:luftsensor_krets-} og \ref{fig:luftsensor_3d} under viser henholdsvis kretstegning og 3d-modell av luftsensoren.
 
 \begin{figure}[H]
     \centering
@@ -201,43 +385,84 @@ All luftdataen hentes fra en BME280-sensor fra Bosch, som kan måle både temper
     \label{fig:luftsensor_3d}
 \end{figure}
 
+De eneste eksterne komponentene BME280-sensoren trenger rundt seg, er en kondensator ved hver av de to spenningsinngangene \texttt{VDD} og \texttt{VDDIO}, og en opptrekksmotstand (eng: pull-up resistor) til databussen \texttt{SDA} og en til klokkebussen \texttt{SCL}.
+
+For å leses data fra sensoren finnes det et eget bibliotek som heter \textit{bme280lib} \cite{bme280lib}, som gjør det enkelt å lese data fra sensoren med en sample-funksjon. 
+Biblioteket \textit{smbus2} \cite{smbus2} brukes også for å opprette en I2C bussforbindelse.
 %https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280-DS002.pdf
 
-\subsubsection{Anemometer}
+Kode i bme280.py (\url{https://github.com/jolyu/Weather-station/blob/master/bme280_sensor.py}). \todo{Legges til eller bare referer til?}
 
-Anemometeret som brukes måler vindhastigheten ved å lukke en bryter når en magnet beveger seg forbi bryteren. Måleren bruker en reed-bryter, en bryter som lukkes når det er et magnetfelt tilstede. Denne bryteren lukkes én gang for hver omdreining. Ved å telle antall ganger bryteren lukkes per tidsenhet kan rotasjonshastigheten til vindmåleren beregnes. Dette kan igjen brukes til å regne ut vindhastigheten. I følge databladet vil bryteren lukkes én gang i sekundet ved en vindhastighet på 2.4 km/h ~ 0.67 m/s.
+\subsubsection{Anemometer}\label{sec:impl:vaer:anemometer}
+
+Anemometeret som brukes, vist i figur \ref{fig:anemometer}, måler vindhastigheten. 
+Sensoren bruker en \textit{reed-kontakt}, en mekanisk bryter som lukkes av et magnetisk felt. 
+For hver omdreining beveger en magnet seg forbi denne bryteren, slik at den lukkes i et kort øyeblikk. 
+Ved å telle antall ganger bryteren lukkes per tidsenhet, kan rotasjonshastigheten til vindmåleren beregnes. 
+Dette kan igjen brukes til å regne ut vindhastigheten. 
+I følge databladet\cite{weather} vil bryteren lukkes én gang i sekundet ved en vindhastighet på $\SI{2.4}{\kilo\meter\per\hour}$, som tilsvarer $\SI{0.67}{\meter\per\second}$.
 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{implementering/anemometer.png}
-    \caption{Anemometeret,}
+    \caption{Figur av anemometeret som brukes.}
     \label{fig:anemometer}
 \end{figure}
 
+For å telle antall omdreininger brukes klassen \python{Button} fra biblioteket \textit{gpiozero}. 
+
+Kode i WeatherStationMain.py (\url{https://github.com/jolyu/Weather-station/blob/master/WeatherStationMain.py}).  \todo{Legges til eller bare referer til?}
 
 %https://www.argentdata.com/files/80422_datasheet.pdf
 
-\subsubsection{Vindretning}
+\subsubsection{Vindretning}\label{sec:impl:vaer:vindret}
 
-Retningsmåleren består av 8 reed-brytere plassert i en sirkel, slik at det er $45\degree$ mellom hver bryter. En magnet vil rette seg mot vinden, og vil lukke en eller to reed-brytere om gangen. Dett resulterer i totalt 16 posisjonskombinasjoner, og dermed en nøyaktighet på $\pm 11.25\degree$. De 16 ulike kombinasjonene vil koble signalpinen til 16 ulike motstandsverdier, som kan leses som et analogt signal for å finne retningen ved hjelp av en spenningsdeler.
-
+Retningsmåleren, vist i figur \ref{fig:vindretning}, består av 8 reed-brytere plassert i en sirkel slik at det er $45\degree$ mellom hver bryter \cite{weather}. 
+En magnet vil rette seg mot vinden, og vil lukke enten en bryter eller to nabobrytere om gangen, avhengig av posisjonen. \todo{Kanskje en figur på hvordan dette fungerer?}
+Dette resulterer i totalt 16 posisjonskombinasjoner, og dermed en nøyaktighet på $\pm 11.25\degree$. 
+De 16 ulike kombinasjonene vil koble signalpinen til 16 ulike motstandsverdier, 
+som kan leses som et analogt signal ved hjelp av en spenningsdeler for å finne retningen. 
+Da en Raspberry Pi ikke har en innebygd analog/digital-omformer, sendes det analoge signalet via en MCP3221A5T ADC til Raspberry Pi-en. 
+Denne spenningsdelingen og analog/digital-omformeren, samt programmet som henter ut dataen, er diskutert nærmere i \autoref{sec:impl:vaer:kretskort}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{implementering/vindretning.png}
-    \caption{Vindretningssensoren.}
+    \caption{Figur av vindretningssensoren som brukes.}
     \label{fig:vindretning}
 \end{figure}
 
 
-\subsubsection{Regn}
+\subsubsection{Nedbør}\label{sec:impl:vaer:regn}
 
-Nedbørsmåleren består av to selv-tømmende beholdere, som fylles opp og tipper over etter en gitt mengde nedbør. Når den ene beholderen er fylt opp og tippet over, renner vannet ut under sensoren, og den nye beholderen blir plassert under vanninntaket. Denne sensoren bruker også en reed-kontakt, som trigges av en magnet hver gang en beholder tipper over. Ved å telle antall ganger bryteren lukkes og multiplisere det med mengden nedbør før en beholder tipper, som i databladet er gitt til å være 0,2794 mm, beregnes mengden nedbør som har falt i et gitt tidsrom.
+Nedbørsmåleren består av to selv-tømmende beholdere, som fylles opp og tipper over etter en gitt mengde nedbør. 
+Når den ene beholderen er fylt opp og tippet over, renner vannet ut under sensoren, og den nye beholderen blir plassert under vanninntaket. 
+Denne sensoren bruker også en reed-kontakt, som trigges av en magnet hver gang en beholder tipper over. 
+Ved å telle antall ganger bryteren lukkes og multiplisere det med mengden nedbør før en beholder tipper, beregnes mengden nedbør som har falt i et gitt tidsrom. 
+Mengden nedbør før en beholder tipper er i databladet\cite{weather} definert til å være $0,2794$mm. Figur \ref{fig:impl:vaer:regn} viser bilde av nedbørsmåleren.
 
-\subsubsection{Kretskort til sensorer}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{implementering/rain_gauge.jpg}
+    \caption{Figur av nedbørsmåleren som brukes.}
+    \label{fig:impl:vaer:regn}
+\end{figure}
 
-For enkelt å kunne koble alle sensorene til Raspberry Pi-en, brukes et kretskort som kobler alt sammen. I tillegg til kontakter for enkelt å koble av og på alle sensorene, inneholder kretskortet en analog til digital-omformer, siden en Raspberry Pi ikke inkluderer dette. ADC-en som brukes er en MCP3221A5T fra Microchip. Omformeren tar inn et analogt signal, og kommuniserer direkte over I2C-buss-protokollen med Raspberry Pi-en. Det eneste signalet som trenger en ADC er signalet fra vindretningssensoren. Luftsensoren kommuniserer direkte via I2C-bussen uten en ADC, og anemometeret og nedbørssensoren kobles til hver sin GPIO-pin på Rasperry Pi-en via kretskortet, som sender ut et digitalt signal. Figur x og x under viser henholdsvis kretstegningen og 3D-modell av dette kretskortet.
+Tilsvarende som med anemometeret i \autoref{sec:impl:vaer:anemometer}, brukes også klassen \python{Button} fra biblioteket \textit{gpiozero} for å detektere hver gang reed-bryteren lukkes.
+
+\subsubsection{Kretskort til sensorer}\label{sec:impl:vaer:kretskort}
+
+
+For enkelt å kunne koble alle sensorene til Pi-en, brukes et kretskort som kobler alt sammen. 
+I tillegg til kontakter for å koble til sensorene, inneholder kretskortet en motstand, $R1$, til spenningsdeleren til vindretningssensoren. 
+Videre inneholder kretskortet en analog/digital-omformer, $U1$, for å digitalisere signalet fra denne spenningsdeleren. 
+ADC-en som brukes er en MCP3221A5T fra Microchip\cite{adc}. 
+Omformeren tar inn et analogt signal, og kommuniserer direkte over I2C-bussprotokollen med Pi-en. 
+opptrekksmotstander, $R2$ og $R3$, brukes også her for å trekke $SDA$ og $SCL$ bussene høye, og to kondensatorer, $C1$ og $C2$, brukes for å filtrere bort ulike støyfrekvenser fra spenningsforsyningen. 
+
+Luftsensoren kommuniserer med prosesseringsenheten direkte via I2C-bussen, og anemometeret og nedbørssensoren kobles til henholdsvis GPIO pin 5 og 6 på Pi-en via kretskortet, som vist i \autoref{fig:kretsskjema_pi}. 
+Figur \ref{fig:sensorkretskort_krets} og \ref{fig:sensorkretskort_3d} under viser henholdsvis kretstegning og 3D-modell av dette kretskortet.
 
 \begin{figure}[H]
     \centering
@@ -257,32 +482,51 @@ For enkelt å kunne koble alle sensorene til Raspberry Pi-en, brukes et kretskor
 %https://www.argentdata.com/files/80422_datasheet.pdf
 %http://ww1.microchip.com/downloads/en/DeviceDoc/20001732E.pdf
 
+For å lese data fra MCP3221A5T ADC-en, brukes igjen biblioteket \textit{smbus2}\cite{smbus2}. 
+Funksjonen \\ \python{read_byte_data(address, byte)} fra dette biblioteket brukes for enkelt å lese data fra ADC-en over I2C-protokollen.  
 
-\subsection{Nettside}
 
-\todo{Bilde eller figur av nettside}
+\subsection{Nettside}\label{sec:impl:nettside}
 
-Nettsiden har som mål å vise informasjonen som hentes inn av både fugletelleren og værstasjonen. Til dette brukes Python-rammeverket Dash \cite{dash}. Dash er laget spesifikt for å vise og prosessere store mengder data i enkle grafer og oppgi disse på en statisk nettside. 
+Nettsiden har som mål å vise informasjonen som hentes inn av både fugletelleren og værstasjonen. 
+Til dette brukes Python-rammeverket \textit{Dash} \cite{dash}. 
+Dash er laget spesifikt for å vise og prosessere store mengder data i enkle grafer og oppgi disse på en statisk nettside. 
+Se \autoref{fig:nettside:nettside}
 
-Det kjøres et backend-program som har som oppgave å hente all data fra databasen som er nevnt i \autoref{subsubsec:telemetri}, telemetri. Deretter prosesserer og filtrerer programmet data slik at det ikke bare er punktdata, men data basert på timer, dager, måneder osv. Dette krever kraftige sortering- og filtreringsalgoritmer. Noen av disse algoritmene er allerede implementert, men noen må også implementeres med vanlige funksjoner i Python. 
+\begin{figure}[!htbp] \todo{flytte over kampittel 4.5.1?}
+    \centering
+    \includegraphics[width=.9\textwidth]{implementering/nettside/nettside.png}
+    \caption{Eksempelnettside til jolyu.}
+    \label{fig:nettside:nettside}
+\end{figure}
 
-Store deler av nettsiden fungerer på samme måte. Det kjøres en funksjon om du velger noe data, eller ber nettsiden hente et nytt datasett. Det vil derfor kun gis noen eksempler i avsnittene under, og hele nettsiden kan leses på GitHub\todo{Må legge inn URL og kilde.}
+Når nettsiden lastes inn, vil data fra databasen hentes fra nettet. 
+Deretter prosesserer og filtrerer programmet dataen slik at det ikke bare er punktdata, men data basert på timer, dager, måneder og så videre. 
+Dette krever effektive sortering- og filtreringsalgoritmer, da dataen kan inneholde flere tusen punkter.
+Noen av disse algoritmene er allerede implementert i ferdige biblioteker, men noen må også implementeres med vanlige funksjoner i Python. 
+Flyten på nettsiden kan sees i flytdiagrammet i \autoref{fig:nettside:flytdiagram}.
 
-Bilde?\todo{Kanskje et flytdiagram?}
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=.7\textwidth]{implementering/nettside/JolyuNettsideOverordnetFlyt.pdf}
+    \caption{Flytdiagrammet til nettsiden.}
+    \label{fig:nettside:flytdiagram}
+\end{figure}
 
-\subsubsection{Rammeverket}
+Store deler av nettsiden fungerer på samme måte. 
+Det kjøres en funksjon om du velger noe data i en graf, eller ber nettsiden hente et nytt datasett. 
+Dette registreres ved hjelp av en ''callback'', se \autoref{sec:impl:nettside:callback}.
+Det vil derfor kun gis noen eksempler i avsnittene under, og koden til hele nettsiden kan leses på jolyu sin GitHub \cite{GitHub}, eller direkte til "repository": \url{https://github.com/jolyu/nettside}.
 
-Nettsiden er basert på rammeverket \textbf{Dash} \cite{dash}, som er en kombinasjon og mellomledd mellom nettside-rammeverket for statiske nettsider, \textbf{flask} \cite{flask} og javascript biblioteket \textbf{plotly} \cite{plotly} for å plotte data.
+\subsubsection{Rammeverket}\label{sec:impl:nettside:rammeverk}
 
-Dash fungerer ved å bruke spesialobjekter fra plotly som ''graph'' og ''slider'', og vanlige \mintinline{html}{html} objekter som \mintinline{html}{div} og \mintinline{html}{header}. Disse defineres i en \mintinline{html}{json} liste, se et enkelt eksempel under i \autoref{code:dashExample1}. 
+\textit{Dash} \cite{dash} er en kombinasjon og mellomledd mellom det pythonbaserte nettside-rammeverket for statiske nettsider, \textit{flask}, \cite{flask} og javascript biblioteket \textit{plotly} \cite{plotly} for å plotte data.
 
-\begin{code}
-\begin{minted}[mathescape,
-               linenos,
-               numbersep=5pt,
-               gobble=2,
-               frame=lines,
-               framesep=2mm]{python}
+Dash fungerer ved å bruke spesialobjekter fra \textit{plotly} som ''graph'' og ''buttons'', og vanlige \html{html} objekter som \html{div} og \html{header}. 
+Disse defineres i en liste med nøkkelverdier for variabler. Se et enkelt eksempel under i \autoref{code:impl:nettside:dash1} som er tatt fra dokumentasjonen til \textit{Dash}. 
+
+\begin{listing}[!htb]
+\begin{minted}{python}
     import dash_core_components as dcc
 
     dcc.Dropdown(
@@ -294,81 +538,194 @@ Dash fungerer ved å bruke spesialobjekter fra plotly som ''graph'' og ''slider'
         value='MTL'
     )
 \end{minted}
-\caption{Eksempel på hvordan implementere en ''dropdown'' i dash.}
-\label{code:dashExample1}
-\end{code}
+\caption{Eksempel på hvordan implementere en enkel ''dropdown'' (valgliste) i dash.}
+\label{code:impl:nettside:dash1}
+\end{listing}
 
-Det Dash implementerer i flask, er hvordan lage mer interaktive nettsider ved å legge til \textbf{callbacks}, funksjoner som kjører når du f.eks. trykker på en knapp, eller endrer på zoom i en graf.
-Det er slik store deler av nettsiden er bygget opp, ved at brukeren endrer på hvilke objekter som er valgt eller drar i en slider. Da vil det skje en ''callback'' som vil kunne endre på data og deretter oppdatere nettsiden. En generell callback som er brukt mye i nettsiden til jolyu er å oppdatere hvilke data som er valgt fra grafen. Et eksempel er i \autoref{code:dashExample2}. Denne tar inn \mintinline{python}{selectedData} fra en graf med id \mintinline{python}{monthAverage} og returnerer data til en lagringssted med id \mintinline{python}{day_selector}. 
-
-\begin{code}
-\begin{minted}[mathescape,
-               linenos,
-               numbersep=5pt,
-               gobble=2,
-               frame=lines,
-               framesep=2mm]{python}
-    @app.callback(
-        Output("day_selector", "data"), # Det er her retur-funksjonen returnerer ting
-        [Input("monthAverage", "selectedData"), # Input fra en graf og en slider
-        Input("time_slider", "value")],
-    )
-    def UpdateDaySel(daySelector, timeSlider):
-        days = []
-        if daySelector is None:
-            days = TimeSliderToDate(timeSlider)
-        else:
-            days = daySelector["range"]["x"]
-        print(days)
-        return days
-\end{minted}
-\caption{Et reelt eksempel på hvordan callbacks brukes på nettsiden. Oppdaterer data fra en graf.}
-\label{code:dashExample2}
-\end{code}
+Flask er i utgangspunktet laget for statiske nettsider, der data er ferdig laget når nettsiden lastes inn. 
+Det Dash implementerer i Flask, er hvordan lage mer interaktive nettsider ved å legge til ''callbacks'', funksjoner som kjører når du for eksempel trykker på en knapp eller endrer på zoom i en graf.
+Det er slik store deler av nettsiden er bygget opp, ved at brukeren endrer på hvilke objekter som er valgt eller drar i en slider. 
+Da vil det skje en ''callback'' som vil kunne endre på data og deretter oppdatere nettsiden. 
+Dette kan leses mer om i neste avsnitt.
 
 
-\subsubsection{Sortering og filtrering}
 
-Sortering og filtrering kan gjøres på veldig mange måter. Det enkleste og ofte det beste er å bruke innebygde funksjoner. På nettsiden brukes en avansert liste, ligner på en SQL-database, som heter \mintinline{python}{dataframe} fra \textbf{pandas} \cite{dataframe}. Den har sine egne sorteringsalgoritmer som brukes aktivt. 
+\subsubsection{Callbacks}\label{sec:impl:nettside:callback}
 
-Den mest intense sorteringen er å samle all punktdataen til måneder (eller uker/dager), da det kan være flere hundre tusen punkter i dataen, ønskes det at sorteringen skal være effektiv. Derfor brukes de innebygde funksjonene for akkurat dette formålet. I \autoref{code:dfSortEx1} kan det ses hvordan bare funksjonen \mintinline{python}{dataframe.resample().sum()} brukes for å summere alle punkter i en måned sammen til et enkelt punkt.
+Nettsiden bruker stort sett ''callbacks'' for å endre på hvilke data som skal vises i de forskjellige grafene. 
+%Dersom det blir tatt utgangspunkt i en forenklet figur av nettsiden vist i \autoref{fig:impl:nettside:forenkletNettside} og \ref{fig:impl:nettside:callback}, kan vi s
+En callback er en type funksjon som reagerer når noe endres på eller en hendelse, som et knappetrykk. 
+Deretter kjøres funksjonen for så å returnere data til et annet objekt. 
 
-\begin{code}
-\begin{minted}[mathescape,
-               linenos,
-               numbersep=5pt,
-               gobble=2,
-               frame=lines,
-               framesep=2mm]{python}
-    def DataToMonths(data):
-        df = data.resample('M').sum()
-        return(df)
-    
-    def DataToDays(df):
-        df = df.resample('D').sum()
-        return(df)
-\end{minted}
-\caption{Funksjoner som sorterer punkter på måneder og dager.}
-\label{code:dfSortEx1}
-\end{code}
-
-\subsubsection{Database}
-
-\subsection{Strukturelt}
-
-Stativet boksen og værstasjonen skal festes til er vist i figur \ref{fig:Stativ}. Her vil boksen festes til stangen ca ?? m over bakken mens øverst ?? m over bakken er modulene til værstasjonen festet. 
-
-\begin{figure}[H]
+\begin{figure}[!htbp]
     \centering
-    \includegraphics[width=.7\textwidth]{implementering/Stativ.jpg}
-    \caption{Stativ for boks og værstasjon.\todo{Sett inn bilde}}
+    \includegraphics[width=0.9\textwidth]{implementering/nettside/NettsideEnkel.pdf}
+    \caption{Forenklet figur av nettsiden med hva elementer i grå bokser og navnet til elementet i rød teks, evt med pil til elementet.}
+    \label{fig:impl:nettside:forenkletNettside}
+\end{figure}
+
+Alle de grå elementene i \autoref{fig:impl:nettside:forenkletNettside} brukes til å gjøre en callback for ulike ting. 
+De røde navnene er navnene på elementene som vil kjøre en ''callback''.
+Figur \ref{fig:impl:nettside:callback} viser hvordan ''callbacks'' flytter data rundt om på siden. 
+Ta \python{fetchDbButton} som eksempel. 
+Når knappen klikkes på, vil data skrives til alle stedene pilene peker til. 
+Der de blå boksene med tekst er forskjellige atributter i hvert av elementene.
+
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=.9\textwidth]{implementering/nettside/callbacks.png}
+    \caption{''Callback''-diagram for nettsiden. De grønne nodene er et callback som utløses av det som kommer inn, og skriver til der pilene peker.}
+    \label{fig:impl:nettside:callback}
+\end{figure}
+
+Når \python{dbDates} oppdateres trigger det to forskjellige ''callbacks''. 
+Den ene av dem vil oppdatere \html{href} i \python{downloadBut} med nedlastning av det aktive datasettet. 
+I \autoref{code:impl:nettside:callback} vises det hvordan denne ''callback''-en fungerer. 
+
+\begin{listing}[!htb]
+\begin{minted}{python}
+    @app.callback(
+        Output("downloadBut", "href"),
+        [
+            Input("dbDates", "data"),
+        ]
+    )
+    def UpdateDownloadButton(dates):
+        """ Updates the download button with the data from the current dataset """
+        # Check if the dates variable is not empty
+        if dates == None:
+            dates = GetInitialDates(ref, initialDays)
+        else:
+            dates = pd.to_datetime(dates)
+        
+        # Query the dataset
+        df = QueryDF(ref, dates)
+    
+        # Convert dataframe to csv and convert into a "file" that is parsed into a 
+        # string with no invalid characters
+        csvString = df.to_csv(encoding="utf-8")
+        csvString = "data:text/csv;charset=utf-8," + urlParse.quote(csvString)
+        return csvString
+\end{minted}
+\caption{''Callback'' som oppdaterer nedlastningen av det aktive datasettet, basert på en oppdatering av aktive datoer i datasettet.}
+\label{code:impl:nettside:callback}
+\end{listing}
+
+En ''callback'' initialiseres ved å si hva som skal være \python{Input} (en type ''trigger'') og hvor data skal puttes når ''callback'' er ferdig med en \python{Output}. 
+I dette tilfellet vil ''callback''-en kjøres når \python{dbDates} endres. 
+Denne inneholder første og siste dato i det aktive datasettet. 
+Denne oppdateres av \python{fetchDbButton}, som henter datasettet fra databasen, som vist i \autoref{fig:impl:nettside:callback}. 
+Den vil deretter lage en \python{string} med alle aktive datasett og putte det som en link i atributten \html{href}.
+
+Dette er bare en av ''callback''-ene på nettsiden, for å se hele nettsiden kan en gå til jolyu sin GitHub \cite{GitHub}
+
+\subsubsection{Sortering og filtrering}\label{sec:impl:nettside:sortering}
+
+Sortering og filtrering kan gjøres på veldig mange måter. 
+Det enkleste og ofte det beste er å bruke innebygde funksjoner. 
+På nettsiden brukes en avansert liste, en \python{dataframe} fra \textit{pandas} \cite{dataframe}. 
+Den har sine egne sorteringsalgoritmer som brukes aktivt på nettsiden. 
+
+Den mest intense sorteringen er å samle all punktdataen til måneder (eller uker/dager). 
+Det kan være flere hundre tusen punkter i dataen, ønskes det at sorteringen skal være effektiv. 
+Derfor brukes de innebygde funksjonene for akkurat dette formålet. 
+I \autoref{code:impl:nettside:sortering1} kan det ses hvordan funksjonen \python{dataframe.resample(<timegroup>).sum()} brukes for å summere alle punkter i en måned, sammen til et enkelt punkt.
+
+\begin{listing}[!htb]
+\begin{minted}{python}
+    def DataToMonths(df):
+        """ Sort data in dataframe into months """
+        df = df.resample('M').sum()
+        return df
+    
+    
+    def DataToWeeks(df):
+        """ Sort data in dataframe into weeks """
+        df = df.resample('W').sum()
+        return df
+\end{minted}
+\caption{Funksjoner som sorterer punkter på måneder og uker.}
+\label{code:impl:nettside:sortering1}
+\end{listing}
+
+For å hente ut en liten del av datasettet brukes noen selvlagde funksjoner. 
+Her sendes inn en dataframe, start- og sluttdato og vil deretter finne de datapunktene som er innenfor dette tidsintervallet og returnere en ny dataframe.
+
+\begin{listing}[!htb]
+\begin{minted}{python}
+    def FilterData(df, startDate, endDate):
+        """ Filter out a partition of a dataframe """
+        dff = df.loc[(df.index > startDate)
+            & (df.index < endDate)]
+        return dff
+\end{minted}
+\caption{Funksjon som henter ut et område innenfor to gitte datoer.}
+\label{code:impl:nettside:sortering2}
+\end{listing}
+
+
+\subsubsection{Database}\label{sec:impl:nettside:database}
+
+Kommunikasjon mellom Pi-en og nettsiden går via Googles ''Realtime Firebase database''. 
+Denne kommunikasjonen foregår over Wi-Fi. 
+Dataene Pi-en samler inn blir sendt til databasen som dictionaries\footnote{En type liste der en verdi i listen kan inneholde flere lister.}\cite{dictionaries}\todo{oversette til norsk?} og lagret der på et NoSQL-format. 
+En NoSQL-database er ikke like streng med struktur, så den takler bedre endringer i strukturen til dataene. 
+Firebase har laget gode Python-bibliotek som gjør overføring fra Pi-en enkelt. 
+Måten dette fungerer på blir abstrahert bort av ferdigutviklet software, som ligger i \textit{firebase\_admin} biblioteket. 
+All data i databasen har en nøkkel som er en tidsstempel\footnote{Unix tidsstempel - Tid i sekunder fra 1. januar 1970. Brukes mye i datateknologi.} som angir når det ble lastet opp i databasen. 
+Når data blir hentet fra databasen kan det sorteres etter nøklene eller de forskjellige dataene som ligger der.
+
+Et eksempel på en slik database er en enkel \html{json}\footnote{Dette er bare en skriftlig versjon av en dictionary.}-liste, som sett i \autoref{code:impl:nettside:json}.
+
+\begin{listing}[!htb]
+    \begin{minted}{json}
+    {
+        "1609455600": {
+            "time": 1609455600.0, 
+            "birds": 8.0, 
+            "Temperature": 7.5, 
+            "Wind": 0.1, 
+            "Humidity": 11.4, 
+            "Pressure": 1027.8
+        }  
+    }
+    \end{minted}
+    \caption{Enkel data i json. Som også er slik data er lagret i databasen}
+    \label{code:impl:nettside:json}
+\end{listing}
+
+
+\subsection{Strukturelt}\label{sec:impl:struktur}
+
+Metallstativet som boksen og værstasjonen skal festes til er vist i \autoref{fig:Stativ}. 
+Her vil boksen festes til stangen $\SI{1}{\meter}$ over bakken, imens modulene til værstasjonen er festet øverst, $\SI{1.5}{\meter}$ over bakken. 
+Stativet vil plasseres på flatt underlag som spesifiser i systemkrav \idref{id:underlag}. 
+Kamera festes inne i boksen bak den skrå delen for at regn, snø og andre fremmedlegemer ikke skal samle seg foran linsen, og for at det skal være vinklet mot himmelen. 
+Boksen printes i PLA-plast på en 3D-printer, og er designet for å kunne stå utendørs over lengre tid.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[trim={0 0 0 20cm}, clip, width=.5\textwidth]{implementering/Stativ.jpg}
+    \caption{Stativ for boks og værstasjon.}
     \label{fig:Stativ}
 \end{figure}
 
-En 3D-modell av boksen er vist i figur \ref{fig:boks}.
+En 3D-modell av boksen er vist i figur \ref{fig:boks}, og en 3D-modell av strukturen til hele systemet er vist i figur \ref{fig:3dsystem}.
+
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=.7\textwidth]{}
-    \caption{En 3D modell av boksen som skal holde kamera og prosesseringsenheten.}
+\centering
+\begin{minipage}[c]{0.45\textwidth}
+\centering
+    \includegraphics[width=0.9\textwidth]{implementering/Boks_render.png}
+    \caption{En 3D-modell av boksen som skal holde kamera og prosesseringsenhet.}
     \label{fig:boks}
+    
+\end{minipage}
+\begin{minipage}[c]{0.45\textwidth}
+\centering
+    \includegraphics[width=0.9\textwidth]{implementering/stativ_render.png}
+    \caption{En 3D-modell av hele systemets fysiske realisering.}
+    \label{fig:3dsystem}
+\end{minipage}
 \end{figure}

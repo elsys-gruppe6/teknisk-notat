@@ -2,13 +2,60 @@
 \documentclass[11pt,norsk]{elsys-teknisk}
 \usepackage{amsmath}
 \usepackage{float}
+\usepackage{chngcntr}
+\counterwithin{figure}{subsection}
+\counterwithin{listing}{subsection}
+
+%\setmonofont{Hack}
+%\renewcommand{\ttdefault}{Hack}
+
+% New monofont
+\newfontfamily{\hack}{Hack}[
+  Extension      = .ttf,
+  Path           = ./fonts/,
+  Scale          = MatchLowercase,
+  UprightFont    = *-Regular,
+  ItalicFont     = *-Italic,
+  BoldFont       = *-Bold,
+  BoldItalicFont = *-BoldItalic,
+]
+
+
+% Codeformatting
+\definecolor{code}{HTML}{eeeeee}
+\setmonofont{Hack}[Scale=MatchLowercase]
+\setminted{mathescape,
+               linenos,
+               numbersep=5pt,
+               autogobble,
+               frame=lines,
+               framesep=2mm,
+               bgcolor=code,
+               %fontsize=\footnotesize,
+               %fontfamily=hack,
+               }
+
+\newmintinline[python]{python}{}
+\newmintinline[html]{html}{}
+
+%%% Part for labeling IDs
+\usepackage{fmtcount}% http://ctan.org/pkg/fmtcount
+\newcounter{idcounter}\renewcommand{\theidcounter}{\arabic{idcounter}}
+\newcommand{\idlabel}[1]{% \speciallabel{<label>}
+  \refstepcounter{idcounter}\texttt{\#\padzeroes[2]{\decimal{idcounter}}}\label{#1}%
+}
+%%% Referencing the ID
+\newcommand{\twodigits}[1]{\ifnum #1<10 0\fi}
+\newcommand{\idref}[1]{\texttt{\#\twodigits{\getrefnumber{#1}}\ref{#1}}}
+
+
 
 %lagt til
 \setlength {\marginparwidth }{2cm}
 \usepackage[colorinlistoftodos]{todonotes}
 
 
-\heading{Designnotat 10} 
+\heading{Designnotat 10}
 \title{Teknisk notat}
 \author{S. H. Ali, J. Haraldstad, S. Hatlehol, \\ S. Mestvedthagen, L. Rønning, Ø. Skaaden og S. Werner-Torgersen}
 \version{1.0}
@@ -26,17 +73,11 @@
 \pagenumbering{Roman}
 %Automatisk generert innholdsfortegnelse:------------------
 \toc
+%\clearpage
+%\listoflistings
 
 
 %Selve rapporten:------------------------------------------
-\textit{Tekst i kursiv er ment som forklaring, tekst uten kursiv skal være med som den er. Kursivert tekst fjernes i den endelige rapporten.\\
-\\
-Denne malen er ment å gi tips for hvordan skrive en god teknisk rapport som dokumenterer et designet og testet elektronisk system. Den tiltenkte leser er en teknisk kyndig person som har bruk for dokumentasjonen i forbindelse med videreutvikling, vedlikehold, reparasjon eller redesign av systemet.\\
-\\
-Malen er inndelt i de samme kaptiler som bør være med i en teknisk rapport, og innholdet i kapitlene er beskrevet fortløpende.
-\cite{bibelen}\todo{Dette må fjernes en gang}
-}
-
 \newpage
 \pagenumbering{arabic}
 \input{problemstilling/problemstilling.tex}
@@ -70,20 +111,12 @@ Malen er inndelt i de samme kaptiler som bør være med i en teknisk rapport, og
 \addcontentsline{toc}{section}{Referanser}
 
 \printbibliography
-%\begin{thebibliography}{99}
-%
-%\bibitem{bibelen}
-%  Albert Einstein,
-%  \emph{Elektronikkbibelen},
-%  O Store Forlag,
-%  1. utgave,
-%  1930.
-%
-%\end{thebibliography}
 
 % Vedlegg
 % Legge til flere vedlegg-filer i mappen og legge til flere input
 \appendix
 \input{vedlegg/vedlegg1.tex}
+%\clearpage
+%\input{vedlegg/vedlegg2}
 
 \end{document}

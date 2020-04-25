@@ -15,7 +15,7 @@
 
 % Better fonts with accents
 \RequirePackage{lmodern}
-\RequirePackage[T1]{fontenc}
+\RequirePackage{fontspec}
 \RequirePackage{moresize}
 \RequirePackage{babel}
 %\RequirePackage[fixlanguage]{babelbib}
@@ -30,8 +30,9 @@
 % Code listings
 \RequirePackage[newfloat]{minted}
 
-\newenvironment{code}{\captionsetup{type=listing}}{}
+%\newenvironment{code}{\captionsetup{type=listing}}{}
 \SetupFloatingEnvironment{listing}{name=Kodeeksempel}
+\SetupFloatingEnvironment{listing}{listname=Liste over kodeeksempler}
 
 % Internasjonal behandling av anførselstegn
 \RequirePackage{csquotes}
@@ -104,7 +105,7 @@ group-digits = false,
 \usetikzlibrary{arrows}
 
 % Electronic drawing
-\RequirePackage[european, american currents, american voltages,siunitx]{circuitikz}
+\RequirePackage[european, american currents, american voltages, RPvoltages, siunitx]{circuitikz}
 \tikzset{opampdownlbl/.style={
     below,
     draw=none,
@@ -135,6 +136,7 @@ group-digits = false,
 \RequirePackage{xurl}
 %\RequirePackage[colorlinks=true,allcolors=blue, hidelinks, pdftex, pdfborderstyle={/S/U/W 0}]{hyperref}
 \RequirePackage[colorlinks=true,allcolors=blue, hidelinks, pdfborderstyle={/S/U/W 0}]{hyperref} % Used for XeLaTeX
+\PassOptionsToPackage{hyphens}{url}
 % Noen av navnene for autoreferanser mangler på norsk, så vi ordner opp i det.
 \addto\extrasnorsk{%
 \def\figureautorefname{figur}%
@@ -143,10 +145,18 @@ group-digits = false,
 \def\subsectionautorefname{underavsnitt}%
 \def\subsubsectionautorefname{underavsnitt}%
 \def\appendixautorefname{vedlegg}
+\def\listingautorefname{kodeeksempel}
 }
+\RequirePackage{cleveref}
 
 
-\RequirePackage[backend=biber,style=numeric,sortcites,giveninits=true]{biblatex}
+\RequirePackage[backend=biber,style=ieee,sortcites,giveninits=true, sorting=none]{biblatex}%sortlocale=nb_NO
+\DeclareFieldFormat{url}{Hentet fra: \url{#1}.}
+\DeclareFieldFormat{urldate}{Lastet ned: #1.}
+\DeclareFieldFormat{volume}{vol. #1.}
+\DeclareFieldFormat{issue}{nr: #1.}
+%\RequirePackage[backend=biber,style=numeric,sortcites,giveninits=true, sorting=none]{biblatex}%sortlocale=nb_NO
+
 %\usepackage[backend=biber,style=numeric,sortcites,firstinits=true]{biblatex}
 % Velger hvilken stil url-adresser skrives, f.eks sf
 %\urlstyle{sf}
@@ -192,7 +202,7 @@ group-digits = false,
 %  \rule{\textwidth}{1pt}
 %}
 \newcommand{\toc}{
-    \tableofcontents
+    \tableofcontents*
     \clearpage
 }
     
