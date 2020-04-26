@@ -202,7 +202,7 @@ group-digits = false,
 %  \rule{\textwidth}{1pt}
 %}
 \newcommand{\toc}{
-    \tableofcontents*
+    \tableofcontents
     \clearpage
 }
     
@@ -221,11 +221,12 @@ group-digits = false,
   \end{tikzpicture}%
 
   \begin{minipage}[t]{0.15\textwidth}
-  \vspace{1.4cm}
-  %0.45cm for bunn-align med tittel, 1.4cm for topp
+  \vspace{2.42cm}
+  %0.45cm for bunn-align med tittel, 1.4cm for topp, 3.5cm for align med navn
   \includegraphics[width=2.0cm]{figurer/jolyu.pdf}
-  \vspace{3.25cm}\\
-  %3.25cm for sort-boks-topp align undertittel, 3.6cm for ntnulogo
+  \vspace{9.5cm}\\
+  %1.25cm for sort-boks-topp align undertittel, 1.6cm for ntnulogo
+  % 9.5cm for center av fakultet
   \includegraphics[width=2.0cm]{elsys-teknisk}
   %\includegraphics[width=2.0cm]{elsys-teknisk}  
 
@@ -233,7 +234,7 @@ group-digits = false,
   \hspace*{.7cm}
   \begin{minipage}[t]{0.75\textwidth}
 
-  \vspace{1.5cm}
+  \vspace{0.5cm}
   \HUGE\textbf{\@heading}
   \vspace{1cm}\\
   \huge \@author
@@ -243,7 +244,7 @@ group-digits = false,
   \huge \@date
   \vspace*{0.5cm}\\
   \large Versjon: \@version
-  \vspace*{8cm}\\
+  \vspace*{7.5cm}\\
   \large \textbf{\@faculty}
   \end{minipage}
   \normalsize
