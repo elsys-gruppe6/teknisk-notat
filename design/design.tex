@@ -9,7 +9,7 @@ En nettside skal så hente og vise fram dataen fra databasen, slik at brukeren f
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{design/designflytskjema.png}
-    \caption{Blokkdiagram over systemet. Fuglene blir detektert av et infrarødt kamera og bildene prosesseres. Værdata samles inn. Dataen blir så sendt videre til en database og vist fram på en nettside.}
+    \caption{Blokkdiagram over systemet. Fuglene blir detektert av et infrarødt kamera og bildene prosesseres. Værdata samles inn. Data blir så sendt videre til en database og vist fram på en nettside.}
     \label{fig:blokkDig}
 \end{figure}
 
@@ -26,7 +26,7 @@ Det er denne type vindturbin som står på Rye i Trondheim, og dette området bl
 \centering
 \caption{Systemkrav.}
 \label{tab:systemkrav}
-%\resizebox{\textwidth}{!}{%
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{|l|l|l|}
 \hline
 \multicolumn{3}{|l|}{\textbf{Generelt}}                                                                             \\ \hline
@@ -53,7 +53,7 @@ Dimensjoner          & Produktet vil være mindre enn 200x300x300mm ekskudert st
 \textbf{Kravnavn}    & \textbf{Beskrivelse}                                               & \textbf{id}             \\ \hline
 Prosesseringsenhet   & Dataene vil behandles av en liten ettkortsdatamaskin.              & \idlabel{id:prosessor}  \\ \hline
 Programvare          & Programvaren vil være basert på åpen kildekode.                    & \idlabel{id:opensource} \\ \hline
-Treffrate &
+Treffrate\footnotemark &
   \begin{tabular}[c]{@{}l@{}}Programvaren skal være god nok til å detektere minimum\\ 75\% av fuglene innenfor synsvinkelen og rekkevidden til kameraet.\end{tabular} &
   \idlabel{id:treffrate} \\ \hline
 Overføring internt &
@@ -64,15 +64,16 @@ Overføring eksternt &
   \idlabel{id:eksternoverføring} \\ \hline
 Fremstilling av data & Resultatene vil fremstilles på en nettside.                        & \idlabel{id:nettside}   \\ \hline
 \end{tabular}
-%}
+}
 \end{table}
+\footnotetext{Antall fugler som er talt og sporet korrekt}
 
 \newpage
 \subsection{Kamera}\label{sec:design:kamera}
 
 Et infrarødt kamera (heretter kalt IR-kamera) brukes til å detektere infrarød stråling. 
 Infrarød stråling er elektromagnetisk stråling med en bølgelengde mellom $\SI{7}{\micro\meter}$ og $\SI{1}{\milli\meter}$ \cite{SNL-IR}.
-Alle objekter med en temperatur over det absolutte nullpunkt sender ut slik stråling, og bølgelengden og intensiteten til denne strålingen kan brukes for å avgjøre temperaturen til objektet. 
+Alle objekter med en temperatur mellom det absolutte nullpunkt (0K) og ca 3900K sender ut slik stråling \cite{SNL-IR}, og bølgelengden og intensiteten til denne strålingen kan brukes for å avgjøre temperaturen til objektet. 
 I dette designet brukes et IR-kamera for å detektere den infrarøde strålingen emittert fra fugler. 
 Fugler er varmblodige og holder en kroppstemperatur på rundt $\SI{40}\:{\degree}$C \cite{snlfugl}.
 De emitterer infrarød stråling som i prinsippet kan detekteres av et infrarødt kamera.
@@ -81,14 +82,14 @@ Himmelen i bakgrunnen vil oppføre seg som et tilnærmet svart legeme, og dermed
 Et IR-kamera brukes i stedet for et vanlig kamera, da det gjør det enklere å detektere fuglene mot himmelen. 
 Et godt eksempel på dette vil være når en hvit måke flyr foran hvite skyer. 
 Fargen til måken vil da kunne gå i ett med skyene, og gjør bildebehandlingen for å detektere fuglen svært vanskelig. 
-Med et IR-kamera vil skyene emittere mindre infrarød stråling, og fuglen kan dermed detekteres. 
+Med et IR-kamera vil det være mulig å se forskjell på fugler og skyer, og fuglen kan dermed detekteres. 
 Videre vil et IR-kamera også gjøre det mulig å detektere fugler når det er mørkt, i motsetning til et konvensjonelt kamera. 
 En av ulempene med IR-kamera er at fuglenes fysiske trekk ikke er like synlige, som for eksempel farge, som ville gjort det lettere å bestemme fuglenes art.
-Et IR-kamera vil også potensielt sett slite mer i noen værtyper, som regn og snø, da nedbør vil kunne emittere relativt mye IR-stråling, og gi mange falske positiver\footnote{Registrering av fugler som ikke er til stede}.
+Et IR-kamera kan også fungere dårligere i noen værtyper, som regn og snø, da nedbør vil kunne emittere relativt mye IR-stråling, og gi mange falske positiver\footnote{Registrering av fugler som ikke er til stede}.
 
 \subsection{Deteksjon}\label{sec:design:deteksjon}
 
-Prosesseringsenheten skal ta inn en kontinuerlig strøm av bilder (frames)\todo{fjerne frames? Bilder på norsk er like forståelig | tror det er brukt frames i koden} fra kameraet og behandle disse bilde for bilde. 
+En prosesseringsenhet skal ta inn en kontinuerlig strøm av bilder fra kameraet og behandle disse bilde for bilde. 
 Bildebehandlingen skal finne objekter i bildet, eller såkalte \textit{blobs}\footnote{Forkortelse for Binary Large OBjects}. 
 Objektene som skal oppdages er fugler, og disse vil skille seg fra bakgrunnen på grunn av deres høyere temperatur, som representeres ved at de har ulik farge fra bakgrunnen på bildene. 
 Bildebehandlingen skal kunne detektere flere objekter i samme bildet. 
@@ -105,18 +106,19 @@ Videre plasseres kameraet slik at vindturbinen ikke er i synsvinkelen til kamera
 \begin{figure}[!htbp]%hentet fra https://www.cadblocksfree.com/en/wind-turbine.html
   \centering
   \begin{minipage}[b]{0.45\textwidth}
-    \includegraphics[width=\textwidth]{design/DeteksjonForan.jpg}
+    \includegraphics[width=0.8\textwidth]{design/DeteksjonForan.jpg}
     \caption{Deteksjonsområdet til systemet sett fra framsiden av vindturbinen, markert i grønt. }
     \label{fig:TurbinForan}
   \end{minipage}
   \hfill
   \begin{minipage}[b]{0.45\textwidth}
-    \includegraphics[width=\textwidth]{design/DeteksjonSiden2.jpg}
+    \includegraphics[width=0.8\textwidth]{design/DeteksjonSiden2.jpg}
     \caption{Deteksjonsområdet til systemet sett fra siden av vindturbinen, markert i grønt.}
     \label{fig:TurbinSiden}
   \end{minipage}
 \end{figure}
 
+\newpage
 \subsection{Værstasjon}\label{sec:design:vaerstasjon}
 Systemet skal ha egne sensorer for innsamling av værdata. 
 Systemet vil kunne måle temperatur, trykk og fuktighet i lufta, i tillegg til vindhastighet, vindretning og nedbør.
@@ -126,7 +128,7 @@ Dette kan så brukes til for eksempel å estimere sannsynligheten for at en fugl
 \subsection{Nettside og database}\label{sec:design:nettside}
 
 Systemet vil ha en nettside som skal fremstille data som samles fra systemet. 
-Dataen skal vises på en slik måte at den er lett forståelig og navigerbar for en bruker uten spesiell teknisk kompetanse. 
+Data skal vises på en slik måte at den er lett forståelig og navigerbar for en bruker uten spesiell teknisk kompetanse. 
 Data skal kunne sorteres etter behov for å se trender i fugleaktivitet, for eksempel time for time eller dag for dag. 
 Det vil også være mulig å eksportere rådata direkte fra nettsiden. 
 
@@ -138,7 +140,7 @@ Prosesseringsenheten og kameraet skal monteres sammen i en boks, som skal beskyt
 Boksen skal være festet til en påle for å heves over bakkenivå, slik at forstyrrelser eller skader fra dyr unngås, samt for ikke å tildekkes av snø eller vegetasjon.
 Videre skal boksen tilfredsstille systemkrav \idref{id:IPrating} om å være værbestandig, og dimensjonskravene \idref{id:størrelse} fra \autoref{tab:systemkrav}. 
 Værsensorene skal være festet på samme påle som resten av systemet. 
-Systemet vil få strøm fra strømnettet.
+Systemet vil få strøm fra det lokale strømnettet.
 
 
 

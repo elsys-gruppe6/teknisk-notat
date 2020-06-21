@@ -224,7 +224,7 @@ group-digits = false,
   \vspace{2.42cm}
   %0.45cm for bunn-align med tittel, 1.4cm for topp, 3.5cm for align med navn
   \includegraphics[width=2.0cm]{figurer/jolyu.pdf}
-  \vspace{9.5cm}\\
+  \vspace{10.5cm}\\
   %1.25cm for sort-boks-topp align undertittel, 1.6cm for ntnulogo
   % 9.5cm for center av fakultet
   \includegraphics[width=2.0cm]{elsys-teknisk}
@@ -244,7 +244,7 @@ group-digits = false,
   \huge \@date
   \vspace*{0.5cm}\\
   \large Versjon: \@version
-  \vspace*{7.5cm}\\
+  \vspace*{10cm}\\
   \large \textbf{\@faculty}
   \end{minipage}
   \normalsize

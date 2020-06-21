@@ -1,5 +1,5 @@
 %Dokumentinnstillinger:---------------------------------
-\documentclass[11pt,norsk]{elsys-teknisk}
+\documentclass[11pt,norsk,a4paper]{elsys-teknisk}
 \usepackage{amsmath}
 \usepackage{float}
 \usepackage{chngcntr}
@@ -51,6 +51,9 @@
 
 \sisetup{math-micro=\text{µ},text-micro=µ}
 
+% Wrap figures
+\usepackage{wrapfig}
+
 %lagt til
 \setlength {\marginparwidth }{2cm}
 \usepackage[colorinlistoftodos]{todonotes}
@@ -58,7 +61,7 @@
 
 \heading{Fremtidens fugletitter}
 \title{Teknisk notat}
-\author{S. H. Ali, J. Haraldstad, S. Hatlehol, \\ S. Mestvedthagen, L. Rønning, Ø. Skaaden og S. Werner-Torgersen}
+\author{S. H. Ali, J. Haraldstad, S. Hatlehol, \\ S. Mestvedthagen, L. Rønning, \\ Ø. Skaaden og S. Werner-Torgersen}
 \version{1.0}
 \date{\today}
 \faculty{Fakultet for informasjonsteknologi og elektroteknikk}
@@ -116,9 +119,9 @@
 
 % Vedlegg
 % Legge til flere vedlegg-filer i mappen og legge til flere input
-\appendix
-\clearpage
-\input{vedlegg/vedlegg1.tex}
-\todo{Denne må også fjernes}
+%\appendix
+%\clearpage
+%\input{vedlegg/vedlegg1.tex}
+
 
 \end{document}
